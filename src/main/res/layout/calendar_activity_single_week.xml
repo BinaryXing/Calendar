@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/calendar_layout_common_operation" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="根据给定的某一天，展示整天所在的一周数据" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/ev_single_week_year"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:hint="年" />
+
+            <EditText
+                android:id="@+id/ev_single_week_month"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:hint="月" />
+
+            <EditText
+                android:id="@+id/ev_single_week_day"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:hint="日" />
+
+            <Button
+                android:id="@+id/btn_single_week_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="确定" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="根据给定的数据，展示某月某周的数据" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/ev_month_week_year"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:hint="年" />
+
+            <EditText
+                android:id="@+id/ev_month_week_month"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:hint="月" />
+
+            <EditText
+                android:id="@+id/ev_month_week_week"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:hint="周" />
+
+            <Button
+                android:id="@+id/btn_month_week_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="确定" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="根据给定的数据，展示某年某周的数据" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/ev_year_week_year"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:hint="年" />
+
+            <EditText
+                android:id="@+id/ev_year_week_week"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:hint="周" />
+
+            <Button
+                android:id="@+id/btn_year_week_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="确定" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <com.xing.android.calendar.view.WeekDayView
+        android:id="@+id/v_week_day"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" />
+
+    <com.xing.android.calendar.view.WeekView
+        android:id="@+id/v_week"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

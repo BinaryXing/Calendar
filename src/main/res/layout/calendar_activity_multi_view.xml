@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout="@layout/calendar_layout_common_operation" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="由于页面空间原因，这里只通过某一天设置相关View的起始数据,Count = 1" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/ev_year"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:hint="年" />
+
+                    <EditText
+                        android:id="@+id/ev_month"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:hint="月" />
+
+                    <EditText
+                        android:id="@+id/ev_day"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:hint="日" />
+
+                    <Button
+                        android:id="@+id/btn_ok"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="确定" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WeekView"/>
+
+            <com.xing.android.calendar.view.WeekDayView
+                android:id="@+id/v_week_day"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.xing.android.calendar.view.WeekView
+                android:id="@+id/v_week"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WeekListView"/>
+
+            <com.xing.android.calendar.view.WeekListView
+                android:id="@+id/v_week_list"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MonthListView"/>
+
+            <com.xing.android.calendar.view.MonthListView
+                android:id="@+id/v_month_list"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="YearListView"/>
+
+            <com.xing.android.calendar.view.YearListView
+                android:id="@+id/v_year_list"
+                android:layout_width="match_parent"
+                android:layout_height="500dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="选择模式"/>
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioGroup
+            android:id="@+id/rg_select_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rb_single"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="单选" />
+
+            <RadioButton
+                android:id="@+id/rb_multi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="多选" />
+
+            <RadioButton
+                android:id="@+id/rb_continuous"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="连选" />
+
+            <RadioButton
+                android:id="@+id/rb_mix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="混合选" />
+
+            <RadioButton
+                android:id="@+id/rb_continuous_multi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="多个连选" />
+
+            <RadioButton
+                android:id="@+id/rb_mix_multi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="多个混合选" />
+        </RadioGroup>
+    </HorizontalScrollView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="一周的第一天"/>
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioGroup
+            android:id="@+id/rg_first_day_of_week"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rb_sunday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周日" />
+
+            <RadioButton
+                android:id="@+id/rb_monday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周一" />
+
+            <RadioButton
+                android:id="@+id/rb_tuesday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周二" />
+
+            <RadioButton
+                android:id="@+id/rb_wednesday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周三" />
+
+            <RadioButton
+                android:id="@+id/rb_thursday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周四" />
+
+            <RadioButton
+                android:id="@+id/rb_friday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周五" />
+
+            <RadioButton
+                android:id="@+id/rb_saturday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="周六" />
+        </RadioGroup>
+    </HorizontalScrollView>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tip:默认每个月的第一天是无效日期"/>
+</LinearLayout>

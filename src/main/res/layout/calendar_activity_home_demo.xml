@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btn_single_week"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="单周"/>
+
+    <Button
+        android:id="@+id/btn_week_list"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="周历"/>
+
+    <Button
+        android:id="@+id/btn_month_list"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="月历"/>
+
+    <Button
+        android:id="@+id/btn_year_list"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="年历"/>
+
+    <Button
+        android:id="@+id/btn_multi_view"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="多个日历控件"/>
+
+    <Button
+        android:id="@+id/btn_v_page_week_calendar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="垂直分页周历（扩展）"/>
+
+    <Button
+        android:id="@+id/btn_h_page_month_calendar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="水平分页月历（扩展）"/>
+
+</LinearLayout>

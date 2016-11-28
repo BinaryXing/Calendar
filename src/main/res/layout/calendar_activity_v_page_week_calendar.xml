@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/calendar_layout_common_operation" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="根据给定的某月开始，展示制定数月的数据" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/ev_year"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:hint="年" />
+
+            <EditText
+                android:id="@+id/ev_month"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:hint="月" />
+
+            <EditText
+                android:id="@+id/ev_month_count"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:hint="月数" />
+
+            <Button
+                android:id="@+id/btn_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="确定" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <com.xing.android.calendar.extend.VPageWeekCalendarView
+        android:id="@+id/v_v_page_week_calendar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

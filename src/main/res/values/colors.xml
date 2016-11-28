@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="calendar_cell_invalid">#ff999999</color>
+    <color name="calendar_cell_unselected">#ffffffff</color>
+    <color name="calendar_cell_selected">#9900ff00</color>
+    <color name="calendar_cell_section_start">#9900ff00</color>
+    <color name="calendar_cell_section_pass">#ff00ff00</color>
+    <color name="calendar_cell_section_end">#9900ff00</color>
+    <color name="calendar_cell_send_start_and_end">#6600ff00</color>
+</resources>
