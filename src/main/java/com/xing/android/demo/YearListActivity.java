@@ -47,7 +47,7 @@ public class YearListActivity extends BaseCommonCalendarActivity {
         mYearListView.setShowYearHeader(true);
         mYearListView.setShowYearFooter(true);
 
-        mCalendarManager = new CalendarManager<>();
+        mCalendarManager = new CalendarManager();
         mCalendarManager.addCalendarView(mYearListView);
         mCalendarManager.setICalendarManagerListener(DEFAULT_CALENDAR_MANAGER_LISTENER);
     }

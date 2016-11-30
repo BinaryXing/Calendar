@@ -47,7 +47,7 @@ public class VPageWeekCalendarActivity extends BaseCommonCalendarActivity {
         mCalendarView.setRowHeight(150);
         mCalendarView.setListener(DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER);
 
-        mCalendarManager = new CalendarManager<>();
+        mCalendarManager = new CalendarManager();
         mCalendarManager.addCalendarView(mCalendarView);
         mCalendarManager.setICalendarManagerListener(DEFAULT_CALENDAR_MANAGER_LISTENER);
     }

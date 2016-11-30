@@ -69,7 +69,7 @@ public class MultiViewActivity extends BaseCommonCalendarActivity {
         mYearListView.setShowYearHeader(true);
         mYearListView.setShowYearFooter(true);
 
-        mCalendarManager = new CalendarManager<>();
+        mCalendarManager = new CalendarManager();
         mCalendarManager.addCalendarView(mWeekView);
         mCalendarManager.addCalendarView(mWeekListView);
         mCalendarManager.addCalendarView(mMonthListView);

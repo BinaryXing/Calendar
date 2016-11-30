@@ -8,7 +8,7 @@ public class ContinuousSelectItem<T> {
     public DayCell<T> mEndDayCell;
 
     public ContinuousSelectItem<T> getCopyContinuousSelectItem() {
-        ContinuousSelectItem<T> item = new ContinuousSelectItem<>();
+        ContinuousSelectItem<T> item = new ContinuousSelectItem<T>();
         if(mStartDayCell != null) {
             item.mStartDayCell = mStartDayCell.getCopyDayCell();
         }

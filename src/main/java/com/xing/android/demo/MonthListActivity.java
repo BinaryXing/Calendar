@@ -49,7 +49,7 @@ public class MonthListActivity extends BaseCommonCalendarActivity {
         mMonthListView.setShowMonthHeader(true);
         mMonthListView.setShowMonthFooter(true);
 
-        mCalendarManager = new CalendarManager<>();
+        mCalendarManager = new CalendarManager();
         mCalendarManager.addCalendarView(mMonthListView);
         mCalendarManager.setICalendarManagerListener(DEFAULT_CALENDAR_MANAGER_LISTENER);
     }

@@ -80,7 +80,7 @@ public class DayCell<T> {
     }
 
     public DayCell<T> getCopyDayCell() {
-        DayCell<T> result = new DayCell<>(mYear, mMonth, mDay);
+        DayCell<T> result = new DayCell<T>(mYear, mMonth, mDay);
         result.setData(mData);
         result.setDayType(mDayType);
         result.setDayStatus(mDayStatus);

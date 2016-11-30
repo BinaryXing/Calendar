@@ -49,7 +49,7 @@ public class WeekListActivity extends BaseCommonCalendarActivity {
         mWeekListView.setListener(DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER);
         mWeekListView.setShowWeekDay(true);
 
-        mCalendarManager = new CalendarManager<>();
+        mCalendarManager = new CalendarManager();
         mCalendarManager.addCalendarView(mWeekListView);
         mCalendarManager.setICalendarManagerListener(DEFAULT_CALENDAR_MANAGER_LISTENER);
     }

@@ -51,7 +51,7 @@ public class CalendarManager<T> implements ICalendarManager<T> {
     private ICalendarManagerListener<T> mListener;
 
     public CalendarManager() {
-        DayCellClickPolicyImp<T> policyImp = new DayCellClickPolicyImp<>();
+        DayCellClickPolicyImp<T> policyImp = new DayCellClickPolicyImp<T>();
         mClickPolicy = new DayCellClickPolicyInfo<T>();
         mClickPolicy.setSinglePolicy(policyImp.SINGLE_POLICY_1);
         mClickPolicy.setMultiPolicy(policyImp.MULTI_POLICY_1);

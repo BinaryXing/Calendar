@@ -80,7 +80,7 @@ public class SingleWeekActivity extends BaseCommonCalendarActivity {
         mWeekDayView.setDayOfWeekCellListener(DEFAULT_WEEK_DAY_LISTENER);
         mWeekView.setWeekViewListener(DEFAULT_WEEK_VIEW_LISTENER);
 
-        mCalendarManager = new CalendarManager<>();
+        mCalendarManager = new CalendarManager();
         mCalendarManager.addCalendarView(mWeekView);
         mCalendarManager.setICalendarManagerListener(DEFAULT_CALENDAR_MANAGER_LISTENER);
     }
