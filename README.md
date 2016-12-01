@@ -3,11 +3,13 @@
 +   该库是Android日历选择库；
 +   支持单选，多选，连选，混合选（起始日期和结束日期可以是同一天），多个连选，多个混合选；
 +   支持一周第一天的设置，日期数据也会随着改变，默认周日是一周的第一天；
-+   支持多个ICalendarView之间数据（选择数据）同步；内部ICalendarView分为几类：单周（WeekView），
-+ 周历（WeekListView），月历（MonthListView）年历（YearListView），CalendarManager
-+ 可以管理多个ICalendarView，做到数据（选择）同步；
++   支持多个ICalendarView之间数据（选择数据）同步；内部ICalendarView分为几类：单周
+（WeekView），周历（WeekListView），月历（MonthListView）年历（YearListView），
+CalendarManager可以管理多个ICalendarView，做到数据（选择）同步；
 +   支持上层定制UI，包括DayCell，周头部，周尾部，月头部，月尾部，年头部，年尾部
 +   支持上层定制选择交互，内部针对每种选择模式，定义了一到两种选择交互（详见DayCellClickPolicyImp)
++   定制交互还处于开发阶段（Click，LongClick，Touch等等），目前默认支持Click交互方式，
+有好的想法可以联系我
 
 ## 页面展示
     内部有Demo页面，分别针对单周，周历，月历，年历，多个控件数据同步，垂直分页周历（扩展）和水平分页月历（扩展）
