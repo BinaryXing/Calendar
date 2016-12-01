@@ -2,7 +2,10 @@ package com.xing.android.demo;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -47,6 +50,9 @@ public abstract class BaseCommonCalendarActivity extends Activity {
     protected RadioButton mThuresdayView;
     protected RadioButton mFridayView;
     protected RadioButton mSaturdayView;
+
+    protected CheckBox mClickEnableView;
+    protected CheckBox mLongClickEnableView;
 
     protected ICalendarManager<Void> mCalendarManager;
 
@@ -271,6 +277,9 @@ public abstract class BaseCommonCalendarActivity extends Activity {
         mFridayView = (RadioButton) findViewById(R.id.rb_friday);
         mSaturdayView = (RadioButton) findViewById(R.id.rb_saturday);
 
+        mClickEnableView = (CheckBox) findViewById(R.id.cb_click_enable);
+        mLongClickEnableView = (CheckBox) findViewById(R.id.cb_long_click_enable);
+
         if(mSelectModeGroupView != null) {
             mSelectModeGroupView.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -294,6 +303,25 @@ public abstract class BaseCommonCalendarActivity extends Activity {
         if(mSundayView != null) {
             mSundayView.setChecked(true);
         }
+
+        mClickEnableView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(mCalendarManager != null) {
+                    mCalendarManager.setClickEnable(b);
+                }
+            }
+        });
+        mClickEnableView.setChecked(true);
+        mLongClickEnableView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(mCalendarManager != null) {
+                    mCalendarManager.setLongClickEnable(b);
+                }
+            }
+        });
+        mLongClickEnableView.setChecked(false);
     }
 
     protected void onSelectModeChecked(int checkedId) {

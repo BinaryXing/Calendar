@@ -7,7 +7,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="选择模式"/>
+        android:text="选择模式" />
+
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -55,10 +56,12 @@
                 android:text="多个混合选" />
         </RadioGroup>
     </HorizontalScrollView>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="一周的第一天"/>
+        android:text="一周的第一天" />
+
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -112,8 +115,38 @@
                 android:text="周六" />
         </RadioGroup>
     </HorizontalScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="定制交互还处于实验阶段，请不必当真"/>
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cb_click_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="开启点击交互" />
+
+            <CheckBox
+                android:id="@+id/cb_long_click_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="开启长按交互" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tip:默认每个月的第一天是无效日期"/>
+        android:text="Tip:默认每个月的第一天是无效日期" />
 </LinearLayout>

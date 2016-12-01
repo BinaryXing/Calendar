@@ -3,6 +3,7 @@ package com.xing.android.calendar.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.xing.android.calendar.CalendarTool;
@@ -12,6 +13,9 @@ import com.xing.android.calendar.model.IWeekCell;
 import com.xing.android.calendar.model.MonthWeekCell;
 import com.xing.android.calendar.model.WeekCell;
 import com.xing.android.calendar.model.YearWeekCell;
+import com.xing.android.calendar.process.DayCellUserInterfaceInfo;
+import com.xing.android.calendar.process.DayCellUserInterfaceInfo.DayCellClickListener;
+import com.xing.android.calendar.process.DayCellUserInterfaceInfo.DayCellLongClickListener;
 import com.xing.android.calendar.util.LogUtil;
 
 import java.util.Arrays;
@@ -197,20 +201,7 @@ public class WeekView<T> extends CalendarView<T> {
                         default:
                             break;
                     }
-                    final int finalI = i;
-                    mDayCellViewList[finalI].setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (mCalendarManager == null) {
-                                LogUtil.w(LOG_TAG, "refresh.onClick:mCalendarManager is null");
-                                return;
-                            } else if (mWeekCell == null || mWeekCell.getDayCellList() == null || finalI >= mWeekCell.getDayCellList().size()) {
-                                LogUtil.i(LOG_TAG, "refresh.onClick:dayCell is empty,finalI = " + finalI);
-                                return;
-                            }
-                            mCalendarManager.onDayCellClick(mWeekCell.getDayCellList().get(finalI));
-                        }
-                    });
+                    setDayCellListener(i);
                 }
             }
             //addView和数据绑定
@@ -247,6 +238,84 @@ public class WeekView<T> extends CalendarView<T> {
     public void setData(List<DayCell<T>> dataList) {
         super.setData(dataList);
         refresh();
+    }
+
+    private void setDayCellListener(final int position) {
+        if(position < 0 || position >= mDayCellViewList.length) {
+            LogUtil.w(LOG_TAG, "setDayCellListener:invalid view positon = " + position);
+            return;
+        }
+        final View view = mDayCellViewList[position];
+        if(view == null) {
+            LogUtil.w(LOG_TAG, "setDayCellListener:view is null, position = " + position);
+            return;
+        }
+        //ClickListener
+        view.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mCalendarManager == null) {
+                    LogUtil.w(LOG_TAG, "setDayCellListener.onClick:mCalendarManager is null");
+                    return;
+                } else if(!mCalendarManager.isClickEnable()) {
+                    LogUtil.w(LOG_TAG, "setDayCellListener.onClick:mCalendarManager disable click");
+                    return;
+                } else if(mCalendarManager.getDayCellUserInterfaceInfo() == null ||
+                        mCalendarManager.getDayCellUserInterfaceInfo().getClickListener() == null) {
+                    LogUtil.w(LOG_TAG, "setDayCellListener.onClick:getDayCellUserInterfaceInfo().getClickListener() is null");
+                    return;
+                } else if(mWeekCell == null || mWeekCell.getDayCellList() == null || mWeekCell.getDayCellList().size() == 0) {
+                    LogUtil.w(LOG_TAG, "setDayCellListener.onClick:mWeekCell is empty");
+                    return;
+                } else if(position < 0 || position >= mWeekCell.getDayCellList().size()) {
+                    LogUtil.w(LOG_TAG, "setDayCellListener.onClick:invalid position = " + position);
+                    return;
+                }
+                DayCell<T> cell = mWeekCell.getDayCellList().get(position);
+                DayCellClickListener<T> clickListener = mCalendarManager.getDayCellUserInterfaceInfo().getClickListener();
+                DayCell<T> resultCell = clickListener.onDayCellClick(view, mCalendarManager, cell);
+                if(resultCell == null) {
+                    LogUtil.i(LOG_TAG, "setDayCellListener.onClick:filtered cell is " + cell.toString());
+                    return;
+                }
+                LogUtil.i(LOG_TAG, "setDayCellListener.onClick:to handle cell is " + resultCell.toString() + ", origin cell is " + cell.toString());
+                mCalendarManager.onDayCellHandle(resultCell);
+            }
+        });
+
+        //LongClickListener
+        view.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if(mCalendarManager == null) {
+                    LogUtil.w(LOG_TAG, "setDayCellListener.onLongClick:mCalendarManager is null");
+                    return false;
+                } else if(!mCalendarManager.isClickEnable()) {
+                    LogUtil.w(LOG_TAG, "setDayCellListener.onLongClick:mCalendarManager disable click");
+                    return false;
+                } else if(mCalendarManager.getDayCellUserInterfaceInfo() == null ||
+                        mCalendarManager.getDayCellUserInterfaceInfo().getLongClickListener() == null) {
+                    LogUtil.w(LOG_TAG, "setDayCellListener.onLongClick:getDayCellUserInterfaceInfo().getLongClickListener() is null");
+                    return false;
+                } else if(mWeekCell == null || mWeekCell.getDayCellList() == null || mWeekCell.getDayCellList().size() == 0) {
+                    LogUtil.w(LOG_TAG, "setDayCellListener.onLongClick:mWeekCell is empty");
+                    return false;
+                } else if(position < 0 || position >= mWeekCell.getDayCellList().size()) {
+                    LogUtil.w(LOG_TAG, "setDayCellListener.onLongClick:invalid position = " + position);
+                    return false;
+                }
+                DayCell<T> cell = mWeekCell.getDayCellList().get(position);
+                DayCellLongClickListener<T> longClickListener = mCalendarManager.getDayCellUserInterfaceInfo().getLongClickListener();
+                DayCell<T> resultCell = longClickListener.onDayCellLongClick(view, mCalendarManager, cell);
+                if(resultCell == null) {
+                    LogUtil.i(LOG_TAG, "setDayCellListener.onLongClick:filtered cell is " + cell.toString());
+                    return false;
+                }
+                LogUtil.i(LOG_TAG, "setDayCellListener.onLongClick:to handle cell is " + resultCell.toString() + ", origin cell is " + cell.toString());
+                mCalendarManager.onDayCellHandle(resultCell);
+                return true;
+            }
+        });
     }
 
     public interface WeekViewListener<T> {

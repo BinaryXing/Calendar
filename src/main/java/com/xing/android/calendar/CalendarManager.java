@@ -2,14 +2,16 @@ package com.xing.android.calendar;
 
 import com.xing.android.calendar.model.ContinuousSelectItem;
 import com.xing.android.calendar.model.DayCell;
-import com.xing.android.calendar.process.DayCellClickPolicyImp;
-import com.xing.android.calendar.process.DayCellClickPolicyInfo;
-import com.xing.android.calendar.process.DayCellClickPolicyInfo.ClickPolicyForContinuous;
-import com.xing.android.calendar.process.DayCellClickPolicyInfo.ClickPolicyForContinuousMulti;
-import com.xing.android.calendar.process.DayCellClickPolicyInfo.ClickPolicyForMix;
-import com.xing.android.calendar.process.DayCellClickPolicyInfo.ClickPolicyForMixMulti;
-import com.xing.android.calendar.process.DayCellClickPolicyInfo.ClickPolicyForMulti;
-import com.xing.android.calendar.process.DayCellClickPolicyInfo.ClickPolicyForSingle;
+import com.xing.android.calendar.process.DayCellHandlePolicyImp;
+import com.xing.android.calendar.process.DayCellHandlePolicyInfo;
+import com.xing.android.calendar.process.DayCellHandlePolicyInfo.PolicyForContinuous;
+import com.xing.android.calendar.process.DayCellHandlePolicyInfo.PolicyForContinuousMulti;
+import com.xing.android.calendar.process.DayCellHandlePolicyInfo.PolicyForMix;
+import com.xing.android.calendar.process.DayCellHandlePolicyInfo.PolicyForMixMulti;
+import com.xing.android.calendar.process.DayCellHandlePolicyInfo.PolicyForMulti;
+import com.xing.android.calendar.process.DayCellHandlePolicyInfo.PolicyForSingle;
+import com.xing.android.calendar.process.DayCellUserInterfaceImp;
+import com.xing.android.calendar.process.DayCellUserInterfaceInfo;
 import com.xing.android.calendar.util.LogUtil;
 import com.xing.android.calendar.view.ICalendarView;
 
@@ -29,7 +31,7 @@ public class CalendarManager<T> implements ICalendarManager<T> {
 
     private List<ICalendarView<T>> mCalendarViewList = new ArrayList<ICalendarView<T>>();
 
-    private DayCellClickPolicyInfo<T> mClickPolicy = new DayCellClickPolicyInfo<T>();
+    private DayCellHandlePolicyInfo<T> mClickPolicy = new DayCellHandlePolicyInfo<T>();
 
     /**
      * 用于保存SELECT_MODE_SINGLE模式时的数据
@@ -48,17 +50,34 @@ public class CalendarManager<T> implements ICalendarManager<T> {
      */
     private List<ContinuousSelectItem<T>> mSelectedContinuousItemList = new ArrayList<ContinuousSelectItem<T>>();
 
+    /**
+     * 是否点击交互开启
+     */
+    private boolean isClickEnable = true;
+    /**
+     * 是否长按交互开启
+     */
+    private boolean isLongClickEnable = false;
+    /**
+     * 是否Touch交互开启
+     */
+    private boolean isTouchEnable = false;
+
+    private DayCellUserInterfaceInfo<T> mUserInterfaceInfo;
+
     private ICalendarManagerListener<T> mListener;
 
     public CalendarManager() {
-        DayCellClickPolicyImp<T> policyImp = new DayCellClickPolicyImp<T>();
-        mClickPolicy = new DayCellClickPolicyInfo<T>();
-        mClickPolicy.setSinglePolicy(policyImp.SINGLE_POLICY_1);
-        mClickPolicy.setMultiPolicy(policyImp.MULTI_POLICY_1);
-        mClickPolicy.setContinuousPolicy(policyImp.CONTINUOUS_POLICY_1);
-        mClickPolicy.setContinuousMultiPolicy(policyImp.CONTINUOUS_MULTI_POLICY_1);
-        mClickPolicy.setMixPolicy(policyImp.MIX_POLICY_1);
-        mClickPolicy.setMixMultiPolicy(policyImp.MIX_MULTI_POLICY_1);
+        DayCellHandlePolicyImp<T> policyImp = new DayCellHandlePolicyImp<T>();
+        setSinglePolicy(policyImp.SINGLE_POLICY_1);
+        setMultiPolicy(policyImp.MULTI_POLICY_1);
+        setContinuousPolicy(policyImp.CONTINUOUS_POLICY_1);
+        setContinuousMultiPolicy(policyImp.CONTINUOUS_MULTI_POLICY_1);
+        setMixPolicy(policyImp.MIX_POLICY_1);
+        setMixMultiPolicy(policyImp.MIX_MULTI_POLICY_1);
+        DayCellUserInterfaceImp<T> userInterfaceImp = new DayCellUserInterfaceImp<T>();
+        getDayCellUserInterfaceInfo().setClickListener(userInterfaceImp.CLICK_1);
+        getDayCellUserInterfaceInfo().setLongClickListener(userInterfaceImp.LONG_CLICK_1);
     }
 
     @Override
@@ -119,73 +138,73 @@ public class CalendarManager<T> implements ICalendarManager<T> {
     }
 
     @Override
-    public void setSinglePolicy(ClickPolicyForSingle<T> policy) {
+    public void setSinglePolicy(PolicyForSingle<T> policy) {
         if(policy == null) {
             LogUtil.w(LOG_TAG, "setSinglePolicy:policy is null");
             return;
         }
         if(mClickPolicy == null) {
-            mClickPolicy = new DayCellClickPolicyInfo<T>();
+            mClickPolicy = new DayCellHandlePolicyInfo<T>();
         }
         mClickPolicy.setSinglePolicy(policy);
     }
 
     @Override
-    public void setMultiPolicy(ClickPolicyForMulti<T> policy) {
+    public void setMultiPolicy(PolicyForMulti<T> policy) {
         if(policy == null) {
             LogUtil.w(LOG_TAG, "setMultiPolicy:policy is null");
             return;
         }
         if(mClickPolicy == null) {
-            mClickPolicy = new DayCellClickPolicyInfo<T>();
+            mClickPolicy = new DayCellHandlePolicyInfo<T>();
         }
         mClickPolicy.setMultiPolicy(policy);
     }
 
     @Override
-    public void setContinuousPolicy(ClickPolicyForContinuous<T> policy) {
+    public void setContinuousPolicy(PolicyForContinuous<T> policy) {
         if(policy == null) {
             LogUtil.w(LOG_TAG, "setContinuousPolicy:policy is null");
             return;
         }
         if(mClickPolicy == null) {
-            mClickPolicy = new DayCellClickPolicyInfo<T>();
+            mClickPolicy = new DayCellHandlePolicyInfo<T>();
         }
         mClickPolicy.setContinuousPolicy(policy);
     }
 
     @Override
-    public void setContinuousMultiPolicy(ClickPolicyForContinuousMulti<T> policy) {
+    public void setContinuousMultiPolicy(PolicyForContinuousMulti<T> policy) {
         if(policy == null) {
             LogUtil.w(LOG_TAG, "setContinuousMultiPolicy:policy is null");
             return;
         }
         if(mClickPolicy == null) {
-            mClickPolicy = new DayCellClickPolicyInfo<T>();
+            mClickPolicy = new DayCellHandlePolicyInfo<T>();
         }
         mClickPolicy.setContinuousMultiPolicy(policy);
     }
 
     @Override
-    public void setMixPolicy(ClickPolicyForMix<T> policy) {
+    public void setMixPolicy(PolicyForMix<T> policy) {
         if(policy == null) {
             LogUtil.w(LOG_TAG, "setMixPolicy:policy is null");
             return;
         }
         if(mClickPolicy == null) {
-            mClickPolicy = new DayCellClickPolicyInfo<T>();
+            mClickPolicy = new DayCellHandlePolicyInfo<T>();
         }
         mClickPolicy.setMixPolicy(policy);
     }
 
     @Override
-    public void setMixMultiPolicy(ClickPolicyForMixMulti<T> policy) {
+    public void setMixMultiPolicy(PolicyForMixMulti<T> policy) {
         if(policy == null) {
             LogUtil.w(LOG_TAG, "setMixMultiPolicy:policy is null");
             return;
         }
         if(mClickPolicy == null) {
-            mClickPolicy = new DayCellClickPolicyInfo<T>();
+            mClickPolicy = new DayCellHandlePolicyInfo<T>();
         }
         mClickPolicy.setMixMultiPolicy(policy);
     }
@@ -421,37 +440,37 @@ public class CalendarManager<T> implements ICalendarManager<T> {
     }
 
     @Override
-    public void onDayCellClick(DayCell<T> dayCell) {
+    public void onDayCellHandle(DayCell<T> dayCell) {
         if(dayCell == null) {
-            LogUtil.w(LOG_TAG, "onDayCellClick:dayCell is null");
+            LogUtil.w(LOG_TAG, "onDayCellHandle:dayCell is null");
             return;
         }
         if(mListener != null && mListener.blockDayCellClick(dayCell)) {
-            LogUtil.i(LOG_TAG, "onDayCellClick:block click dayCell = " + dayCell.toString());
+            LogUtil.i(LOG_TAG, "onDayCellHandle:block dayCell = " + dayCell.toString());
             return;
         }
         if (dayCell.getDayStatus() == CalendarConstant.DAY_STATUS_INVALID) {
-            LogUtil.i(LOG_TAG, "onDayCellClick:dayCell.getDayStatus() is invalid, dayCell = " + dayCell.toString());
+            LogUtil.i(LOG_TAG, "onDayCellHandle:dayCell.getDayStatus() is invalid, dayCell = " + dayCell.toString());
             return;
         }
         switch (mSelectMode) {
             case CalendarConstant.SELECT_MODE_SINGLE:
-                handleClickForSingle(dayCell);
+                handleDayCellForSingle(dayCell);
                 break;
             case CalendarConstant.SELECT_MODE_MULTI:
-                handleClickForMulti(dayCell);
+                handleDayCellForMulti(dayCell);
                 break;
             case CalendarConstant.SELECT_MODE_CONTINUOUS:
-                handleClickForContinuous(dayCell);
+                handleDayCellForContinuous(dayCell);
                 break;
             case CalendarConstant.SELECT_MODE_CONTINUOUS_MULTI:
-                handleClickForContinuousMulti(dayCell);
+                handleDayCellForContinuousMulti(dayCell);
                 break;
             case CalendarConstant.SELECT_MODE_MIX:
-                handleClickForMix(dayCell);
+                handleDayCellForMix(dayCell);
                 break;
             case CalendarConstant.SELECT_MODE_MIX_MULTI:
-                handleClickForMixMulti(dayCell);
+                handleDayCellForMixMulti(dayCell);
                 break;
         }
         if(mListener != null) {
@@ -499,91 +518,204 @@ public class CalendarManager<T> implements ICalendarManager<T> {
         }
     }
 
-    protected void handleClickForSingle(DayCell<T> dayCell) {
+    /**
+     * 定制交互功能还未完成，不建议使用该方法
+     * @return
+     */
+    @Deprecated
+    @Override
+    public boolean isClickEnable() {
+        return isClickEnable;
+    }
+
+    /**
+     * 定制交互功能还未完成，不建议使用该方法
+     * @param value
+     */
+    @Deprecated
+    @Override
+    public void setClickEnable(boolean value) {
+        if(isClickEnable == value) {
+            LogUtil.i(LOG_TAG, "setClickEnable:equal data,value = " + value);
+            return;
+        }
+        isClickEnable = value;
+        for(ICalendarView<T> iCalendarView : mCalendarViewList) {
+            if(iCalendarView != null) {
+                iCalendarView.refresh();
+            }
+        }
+    }
+
+    /**
+     * 定制交互功能还未完成，不建议使用该方法
+     * @return
+     */
+    @Deprecated
+    @Override
+    public boolean isLongClickEnable() {
+        return isLongClickEnable;
+    }
+
+    /**
+     * 定制交互功能还未完成，不建议使用该方法
+     * @param value
+     */
+    @Deprecated
+    @Override
+    public void setLongClickEnable(boolean value) {
+        if(isLongClickEnable == value) {
+            LogUtil.i(LOG_TAG, "setLongClickEnable:equal data,value = " + value);
+            return;
+        }
+        isLongClickEnable = value;
+        for(ICalendarView<T> iCalendarView : mCalendarViewList) {
+            if(iCalendarView != null) {
+                iCalendarView.refresh();
+            }
+        }
+    }
+
+    /**
+     * 定制交互功能还未完成，不建议使用该方法
+     * @return
+     */
+    @Deprecated
+    @Override
+    public boolean isTouchEnable() {
+        return isTouchEnable;
+    }
+
+    /**
+     * 定制交互功能还未完成，不建议使用该方法
+     * @param value
+     */
+    @Deprecated
+    @Override
+    public void setTouchEnable(boolean value) {
+        if(isTouchEnable == value) {
+            LogUtil.i(LOG_TAG, "setTouchEnable:equal data,value = " + value);
+            return;
+        }
+        isTouchEnable = value;
+        for(ICalendarView<T> iCalendarView : mCalendarViewList) {
+            if(iCalendarView != null) {
+                iCalendarView.refresh();
+            }
+        }
+    }
+
+    /**
+     * 定制交互功能还未完成，不建议使用该方法
+     * @return
+     */
+    @Deprecated
+    @Override
+    public DayCellUserInterfaceInfo<T> getDayCellUserInterfaceInfo() {
+        if(mUserInterfaceInfo == null) {
+            mUserInterfaceInfo = new DayCellUserInterfaceInfo<T>();
+        }
+        return mUserInterfaceInfo;
+    }
+
+    /**
+     * 定制交互功能还未完成，不建议使用该方法
+     * @param info
+     */
+    @Deprecated
+    @Override
+    public void setDayCellUserInterfaceInfo(DayCellUserInterfaceInfo<T> info) {
+        if(info == null) {
+            info = new DayCellUserInterfaceInfo<T>();
+        }
+        mUserInterfaceInfo = info;
+    }
+
+    protected void handleDayCellForSingle(DayCell<T> dayCell) {
         if(dayCell == null) {
-            LogUtil.w(LOG_TAG, "handleClickForSingle:dayCell is null");
+            LogUtil.w(LOG_TAG, "handleDayCellForSingle:dayCell is null");
             return;
         } else if(mClickPolicy == null || mClickPolicy.getSinglePolicy() == null) {
-            LogUtil.w(LOG_TAG, "handleClickForSingle:singlePolicy is null");
+            LogUtil.w(LOG_TAG, "handleDayCellForSingle:singlePolicy is null");
             return;
         }
 
-        boolean hasRefreshView = mClickPolicy.getSinglePolicy().handleClickForSingle(this, dayCell, mSelectedDayCell);
+        boolean hasRefreshView = mClickPolicy.getSinglePolicy().handleForSingle(this, dayCell, mSelectedDayCell);
         if(!hasRefreshView) {
             refreshICalendarViewList();
         }
     }
 
-    protected void handleClickForMulti(DayCell<T> dayCell) {
+    protected void handleDayCellForMulti(DayCell<T> dayCell) {
         if(dayCell == null) {
-            LogUtil.w(LOG_TAG, "handleClickForMulti:dayCell is null");
+            LogUtil.w(LOG_TAG, "handleDayCellForMulti:dayCell is null");
             return;
         } else if(mClickPolicy == null || mClickPolicy.getMultiPolicy() == null) {
-            LogUtil.w(LOG_TAG, "handleClickForMulti:multiPolicy is null");
+            LogUtil.w(LOG_TAG, "handleDayCellForMulti:multiPolicy is null");
             return;
         }
 
-        boolean hasRefreshView = mClickPolicy.getMultiPolicy().handleClickForMulti(this, dayCell, mSelectedDayCellList);
+        boolean hasRefreshView = mClickPolicy.getMultiPolicy().handleForMulti(this, dayCell, mSelectedDayCellList);
         if(!hasRefreshView) {
             refreshICalendarViewList();
         }
     }
 
-    protected void handleClickForContinuous(DayCell<T> dayCell) {
+    protected void handleDayCellForContinuous(DayCell<T> dayCell) {
         if(dayCell == null) {
-            LogUtil.w(LOG_TAG, "handleClickForContinuous:dayCell is null");
+            LogUtil.w(LOG_TAG, "handleDayCellForContinuous:dayCell is null");
             return;
         } else if(mClickPolicy == null || mClickPolicy.getContinuousPolicy() == null) {
-            LogUtil.w(LOG_TAG, "handleClickForContinuous:continuousPolicy is null");
+            LogUtil.w(LOG_TAG, "handleDayCellForContinuous:continuousPolicy is null");
             return;
         }
 
-        boolean hasRefreshView = mClickPolicy.getContinuousPolicy().handleClickForContinuous(this, dayCell, mSelectedContinuousItem);
+        boolean hasRefreshView = mClickPolicy.getContinuousPolicy().handleForContinuous(this, dayCell, mSelectedContinuousItem);
         if(!hasRefreshView) {
             refreshICalendarViewList();
         }
     }
 
-    protected void handleClickForContinuousMulti(DayCell<T> dayCell) {
+    protected void handleDayCellForContinuousMulti(DayCell<T> dayCell) {
         if(dayCell == null) {
-            LogUtil.w(LOG_TAG, "handleClickForContinuousMulti:dayCell is null");
+            LogUtil.w(LOG_TAG, "handleDayCellForContinuousMulti:dayCell is null");
             return;
         } else if(mClickPolicy == null || mClickPolicy.getContinuousMultiPolicy() == null) {
-            LogUtil.w(LOG_TAG, "handleClickForContinuousMulti:continuousMultiPolicy is null");
+            LogUtil.w(LOG_TAG, "handleDayCellForContinuousMulti:continuousMultiPolicy is null");
             return;
         }
 
-        boolean hasRefreshView = mClickPolicy.getContinuousMultiPolicy().handleClickForContinuousMulti(this, dayCell, mSelectedContinuousItemList);
+        boolean hasRefreshView = mClickPolicy.getContinuousMultiPolicy().handleForContinuousMulti(this, dayCell, mSelectedContinuousItemList);
         if(!hasRefreshView) {
             refreshICalendarViewList();
         }
     }
 
-    protected void handleClickForMix(DayCell<T> dayCell) {
+    protected void handleDayCellForMix(DayCell<T> dayCell) {
         if(dayCell == null) {
-            LogUtil.w(LOG_TAG, "handleClickForMix:dayCell is null");
+            LogUtil.w(LOG_TAG, "handleDayCellForMix:dayCell is null");
             return;
         } else if(mClickPolicy == null || mClickPolicy.getMixPolicy() == null) {
-            LogUtil.w(LOG_TAG, "handleClickForMix:mixPolicy is null");
+            LogUtil.w(LOG_TAG, "handleDayCellForMix:mixPolicy is null");
             return;
         }
 
-        boolean hasRefreshView = mClickPolicy.getMixPolicy().handleClickForMix(this, dayCell, mSelectedContinuousItem);
+        boolean hasRefreshView = mClickPolicy.getMixPolicy().handleForMix(this, dayCell, mSelectedContinuousItem);
         if(!hasRefreshView) {
             refreshICalendarViewList();
         }
     }
 
-    protected void handleClickForMixMulti(DayCell<T> dayCell) {
+    protected void handleDayCellForMixMulti(DayCell<T> dayCell) {
         if(dayCell == null) {
-            LogUtil.w(LOG_TAG, "handleClickForMixMulti:dayCell is null");
+            LogUtil.w(LOG_TAG, "handleDayCellForMixMulti:dayCell is null");
             return;
         } else if(mClickPolicy == null || mClickPolicy.getMixMultiPolicy() == null) {
-            LogUtil.w(LOG_TAG, "handleClickForMixMulti:mixMultiPolicy is null");
+            LogUtil.w(LOG_TAG, "handleDayCellForMixMulti:mixMultiPolicy is null");
             return;
         }
 
-        boolean hasRefreshView = mClickPolicy.getMixMultiPolicy().handleClickForMixMulti(this, dayCell, mSelectedContinuousItemList);
+        boolean hasRefreshView = mClickPolicy.getMixMultiPolicy().handleForMixMulti(this, dayCell, mSelectedContinuousItemList);
         if(!hasRefreshView) {
             refreshICalendarViewList();
         }
