@@ -7,9 +7,9 @@
 （WeekView），周历（WeekListView），月历（MonthListView）年历（YearListView），
 CalendarManager可以管理多个ICalendarView，做到数据（选择）同步；
 +   支持上层定制UI，包括DayCell，周头部，周尾部，月头部，月尾部，年头部，年尾部
-+   支持上层定制选择交互，内部针对每种选择模式，定义了一到两种选择交互（详见DayCellClickPolicyImp)
++   支持上层定制数据处理策略，内部针对每种选择模式，定义了一到两种选择处理策略（详见DayCellClickPolicyImp)
 +   定制交互还处于开发阶段（Click，LongClick，Touch等等），目前默认支持Click交互方式，
-有好的想法可以联系我
+有好的想法可以联系我1716263268@qq.com
 
 ## 页面展示
     内部有Demo页面，分别针对单周，周历，月历，年历，多个控件数据同步，垂直分页周历（扩展）和水平分页月历（扩展）
