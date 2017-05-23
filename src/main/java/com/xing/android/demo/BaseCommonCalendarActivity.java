@@ -308,7 +308,7 @@ public abstract class BaseCommonCalendarActivity extends Activity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(mCalendarManager != null) {
-                    mCalendarManager.setClickEnable(b);
+                    mCalendarManager.getDayCellUserInterfaceInfo().setClickable(b);
                 }
             }
         });
@@ -317,7 +317,7 @@ public abstract class BaseCommonCalendarActivity extends Activity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(mCalendarManager != null) {
-                    mCalendarManager.setLongClickEnable(b);
+                    mCalendarManager.getDayCellUserInterfaceInfo().setLongClickable(b);
                 }
             }
         });
@@ -367,6 +367,6 @@ public abstract class BaseCommonCalendarActivity extends Activity {
         } else if(checkedId == R.id.rb_saturday) {
             firstDayOfWeek = Calendar.SATURDAY;
         }
-        mCalendarManager.setFirstDayOfWeek(firstDayOfWeek);
+        mCalendarManager.setFirstDayOfWeek(firstDayOfWeek, true);
     }
 }

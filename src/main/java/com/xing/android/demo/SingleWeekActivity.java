@@ -77,8 +77,8 @@ public class SingleWeekActivity extends BaseCommonCalendarActivity {
             }
         });
 
-        mWeekDayView.setDayOfWeekCellListener(DEFAULT_WEEK_DAY_LISTENER);
-        mWeekView.setWeekViewListener(DEFAULT_WEEK_VIEW_LISTENER);
+        mWeekDayView.setDayOfWeekCellListener(DEFAULT_WEEK_DAY_LISTENER, true);
+        mWeekView.setWeekViewListener(DEFAULT_WEEK_VIEW_LISTENER, true);
 
         mCalendarManager = new CalendarManager();
         mCalendarManager.addCalendarView(mWeekView);
@@ -117,7 +117,7 @@ public class SingleWeekActivity extends BaseCommonCalendarActivity {
             ToastUtil.showShortToast(this, "请输入日期（纯数字）");
         }
         mWeekView.setSingleWeek(year, month, day, true);
-        mCalendarManager.iterator();
+        mCalendarManager.iterator(true);
     }
 
     private void applyMonthWeekData() {
@@ -152,7 +152,7 @@ public class SingleWeekActivity extends BaseCommonCalendarActivity {
             ToastUtil.showShortToast(this, "请输入第几周（纯数字）");
         }
         mWeekView.setMonthWeek(year, month, week, true);
-        mCalendarManager.iterator();
+        mCalendarManager.iterator(true);
     }
 
     private void applyYearWeekData() {
@@ -177,14 +177,14 @@ public class SingleWeekActivity extends BaseCommonCalendarActivity {
             ToastUtil.showShortToast(this, "请输入第几周（纯数字）");
         }
         mWeekView.setYearWeek(year, week, true);
-        mCalendarManager.iterator();
+        mCalendarManager.iterator(true);
     }
 
     @Override
     protected void onFirstDayOfWeekChecked(int checkedId) {
         super.onFirstDayOfWeekChecked(checkedId);
         if(mWeekDayView != null && mCalendarManager != null){
-            mWeekDayView.setFirstDayOfWeek(mCalendarManager.getFirstDayOfWeek());
+            mWeekDayView.setFirstDayOfWeek(mCalendarManager.getFirstDayOfWeek(), true);
         }
     }
 }

@@ -43,7 +43,7 @@ public class HPageMonthCalendarActivity extends BaseCommonCalendarActivity {
             }
         });
 
-        mCalendarView.setListener(DEFAULT_MONTH_LIST_LISTENER, DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER);
+        mCalendarView.setListener(DEFAULT_MONTH_LIST_LISTENER, DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER, true);
 
         mCalendarManager = mCalendarView.getCalendarManager();
         mCalendarManager.setICalendarManagerListener(DEFAULT_CALENDAR_MANAGER_LISTENER);
@@ -81,6 +81,6 @@ public class HPageMonthCalendarActivity extends BaseCommonCalendarActivity {
             ToastUtil.showShortToast(this, "请输入月数（纯数字）");
         }
         mCalendarView.set(year, month, monthCount);
-        mCalendarManager.iterator();
+        mCalendarManager.iterator(true);
     }
 }

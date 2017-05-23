@@ -20,12 +20,13 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
+ * 月历，从某月开始展示数月的数据
  * Created by zhaoxx on 16/3/14.
  */
 public class MonthListView<T> extends CalendarListView<T> {
 
     /**
-     * WeekCell(具体到某一天)
+     * WeekCell
      */
     public static final int VIEW_TYPE_NORMAL = 0;
     /**
@@ -93,6 +94,7 @@ public class MonthListView<T> extends CalendarListView<T> {
             return;
         }
 
+        MonthAdapterItem<T> item;
         for(int i = 0 ; i < mMonthCount ; i++) {
             Calendar calendar = Calendar.getInstance();
             calendar.clear();
@@ -101,21 +103,21 @@ public class MonthListView<T> extends CalendarListView<T> {
             for(int j = 1; j <= calendar.getActualMaximum(Calendar.WEEK_OF_MONTH) ; j++) {
                 if(j == 1) {
                     if (isShowMonthHeader) {
-                        MonthAdapterItem<T> headerItem = new MonthAdapterItem<T>();
-                        headerItem.viewType = VIEW_TYPE_MONTH_HEADER;
-                        headerItem.year = calendar.get(Calendar.YEAR);
-                        headerItem.month = calendar.get(Calendar.MONTH) + 1;
-                        mMonthAdapterItemList.add(headerItem);
+                        item = new MonthAdapterItem<T>();
+                        item.viewType = VIEW_TYPE_MONTH_HEADER;
+                        item.year = calendar.get(Calendar.YEAR);
+                        item.month = calendar.get(Calendar.MONTH) + 1;
+                        mMonthAdapterItemList.add(item);
                     }
                     if (isShowWeekDay) {
-                        MonthAdapterItem<T> dayOfWeekItem = new MonthAdapterItem<T>();
-                        dayOfWeekItem.viewType = VIEW_TYPE_DAY_OF_WEEK;
-                        dayOfWeekItem.year = calendar.get(Calendar.YEAR);
-                        dayOfWeekItem.month = calendar.get(Calendar.MONTH) + 1;
-                        mMonthAdapterItemList.add(dayOfWeekItem);
+                        item = new MonthAdapterItem<T>();
+                        item.viewType = VIEW_TYPE_DAY_OF_WEEK;
+                        item.year = calendar.get(Calendar.YEAR);
+                        item.month = calendar.get(Calendar.MONTH) + 1;
+                        mMonthAdapterItemList.add(item);
                     }
                 }
-                MonthAdapterItem<T> item = new MonthAdapterItem<T>();
+                item = new MonthAdapterItem<T>();
                 item.viewType = VIEW_TYPE_NORMAL;
                 item.year = calendar.get(Calendar.YEAR);
                 item.month = calendar.get(Calendar.MONTH) + 1;
@@ -139,11 +141,11 @@ public class MonthListView<T> extends CalendarListView<T> {
                     }
                 }
                 if(j == calendar.getActualMaximum(Calendar.WEEK_OF_MONTH) && isShowMonthFooter) {
-                    MonthAdapterItem<T> footerItem = new MonthAdapterItem<T>();
-                    footerItem.viewType = VIEW_TYPE_MONTH_FOOTER;
-                    footerItem.year = calendar.get(Calendar.YEAR);
-                    footerItem.month = calendar.get(Calendar.MONTH) + 1;
-                    mMonthAdapterItemList.add(footerItem);
+                    item = new MonthAdapterItem<T>();
+                    item.viewType = VIEW_TYPE_MONTH_FOOTER;
+                    item.year = calendar.get(Calendar.YEAR);
+                    item.month = calendar.get(Calendar.MONTH) + 1;
+                    mMonthAdapterItemList.add(item);
                 }
             }
 
@@ -152,27 +154,41 @@ public class MonthListView<T> extends CalendarListView<T> {
             mAdapter = new MonthAdapter<T>(getContext(), mMonthAdapterItemList);
             super.setAdapter(mAdapter);
         }
-        mAdapter.setData(mMonthAdapterItemList);
     }
 
-    public void setShowWeekDay(boolean value) {
-        if(isShowWeekDay != value) {
+    public void setShowWeekDay(boolean value, boolean refresh) {
+        if (isShowWeekDay == value) {
+            LogUtil.i(LOG_TAG, "setShowWeekDay:equal value = " + isShowWeekDay);
+        } else {
             isShowWeekDay = value;
             init();
         }
-    }
-
-    public void setShowMonthHeader(boolean value) {
-        if(isShowMonthHeader != value) {
-            isShowMonthHeader = value;
-            init();
+        if(refresh) {
+            refresh();
         }
     }
 
-    public void setShowMonthFooter(boolean value) {
-        if(isShowMonthFooter != value) {
+    public void setShowMonthHeader(boolean value, boolean refresh) {
+        if (isShowMonthHeader == value) {
+            LogUtil.i(LOG_TAG, "setShowMonthHeader:equal value = " + isShowMonthHeader);
+        } else {
+            isShowMonthHeader = value;
+            init();
+        }
+        if(refresh) {
+            refresh();
+        }
+    }
+
+    public void setShowMonthFooter(boolean value, boolean refresh) {
+        if (isShowMonthFooter == value) {
+            LogUtil.i(LOG_TAG, "setShowMonthFooter:equal value = " + isShowMonthFooter);
+        } else {
             isShowMonthFooter = value;
             init();
+        }
+        if(refresh) {
+            refresh();
         }
     }
 
@@ -182,38 +198,42 @@ public class MonthListView<T> extends CalendarListView<T> {
      * @param weekDayListener
      * @param weekViewListener
      */
-    public void setListener(MonthListListener monthListListener, WeekDayView.WeekDayListener weekDayListener, WeekView.WeekViewListener<T> weekViewListener) {
-        if(mMonthListListener != monthListListener || mWeekDayListener != weekDayListener || mWeekViewListener != weekViewListener) {
+    public void setListener(MonthListListener monthListListener, WeekDayView.WeekDayListener weekDayListener, WeekView.WeekViewListener<T> weekViewListener, boolean refresh) {
+        if (mMonthListListener == monthListListener && mWeekDayListener == weekDayListener && mWeekViewListener == weekViewListener) {
+            LogUtil.i(LOG_TAG, "setListener:equal value");
+        } else {
             mMonthListListener = monthListListener;
             mWeekDayListener = weekDayListener;
             mWeekViewListener = weekViewListener;
-            if (mAdapter != null) {
-                mAdapter.notifyDataSetChanged();
-            }
+        }
+        init();
+        if(refresh) {
+            refresh();
         }
     }
 
-    public void set(int year, int month, int count) {
-        set(year, month, count, mFirstDayOfWeek);
+    public void set(int year, int month, int count, boolean refresh) {
+        set(year, month, count, mFirstDayOfWeek, refresh);
     }
 
-    public void set(int year, int month, int count, int firstDayofWeek) {
+    public void set(int year, int month, int count, int firstDayofWeek, boolean refresh) {
         firstDayofWeek = CalendarTool.getValidFirstDayOfWeek(firstDayofWeek);
         if(!CalendarTool.checkValidOfMonth(year, month)) {
             LogUtil.w(LOG_TAG, "set:invalid data:year = " + year + ",month = " + month);
-            return;
         } else if(year == mStartYear && month == mStartMonth && count == mMonthCount && firstDayofWeek == mFirstDayOfWeek) {
             LogUtil.w(LOG_TAG, "set:equal data:year = " + year + ",month = " + month + ",count = " + count + "firstDayOfWeek = " + firstDayofWeek);
-            return;
         } else if(count < 0) {
             LogUtil.w(LOG_TAG, "set:invalid count = " + count);
-            return;
+        } else {
+            mStartYear = year;
+            mStartMonth = month;
+            mMonthCount = count;
+            mFirstDayOfWeek = firstDayofWeek;
+            init();
         }
-        mStartYear = year;
-        mStartMonth = month;
-        mMonthCount = count;
-        mFirstDayOfWeek = firstDayofWeek;
-        init();
+        if(refresh) {
+            refresh();
+        }
     }
 
     public int getStartYear() {
@@ -236,31 +256,7 @@ public class MonthListView<T> extends CalendarListView<T> {
     @Override
     public void refresh() {
         if(mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    public void setCalendarManager(ICalendarManager<T> calendarManager) {
-        mCalendarManager = calendarManager;
-        if(mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    public void setData(List<DayCell<T>> dataList) {
-        super.setData(dataList);
-        if(mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    public void setFirstDayOfWeek(int firstDayOfWeek) {
-        super.setFirstDayOfWeek(firstDayOfWeek);
-        if(mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
+            mAdapter.setData(mMonthAdapterItemList);
         }
     }
 
@@ -338,17 +334,17 @@ public class MonthListView<T> extends CalendarListView<T> {
                     if(convertView == null) {
                         convertView = new WeekView<T>(mContext);
                     }
-                    ((WeekView<T>) convertView).setCalendarManager((ICalendarManager<T>) mCalendarManager);
-                    ((WeekView<T>)convertView).setFirstDayOfWeek(mFirstDayOfWeek);
-                    ((WeekView<T>)convertView).setWeekViewListener((WeekViewListener<T>) mWeekViewListener);
+                    ((WeekView<T>) convertView).setCalendarManager((ICalendarManager<T>) mCalendarManager, false);
+                    ((WeekView<T>)convertView).setFirstDayOfWeek(mFirstDayOfWeek, false);
+                    ((WeekView<T>)convertView).setWeekViewListener((WeekViewListener<T>) mWeekViewListener, false);
                     ((WeekView<T>)convertView).setWeekCell(item.weekCell, true);
                     break;
                 case VIEW_TYPE_DAY_OF_WEEK:
                     if(convertView == null) {
                         convertView = new WeekDayView(mContext);
                     }
-                    ((WeekDayView)convertView).setFirstDayOfWeek(mFirstDayOfWeek);
-                    ((WeekDayView)convertView).setDayOfWeekCellListener(mWeekDayListener);
+                    ((WeekDayView)convertView).setFirstDayOfWeek(mFirstDayOfWeek, false);
+                    ((WeekDayView)convertView).setDayOfWeekCellListener(mWeekDayListener, true);
                     break;
                 case VIEW_TYPE_MONTH_HEADER:
                     if(mMonthListListener == null) {

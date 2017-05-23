@@ -1,6 +1,7 @@
 package com.xing.android.calendar.model;
 
 /**
+ * 连选Model
  * Created by zhaoxx on 16/3/29.
  */
 public class ContinuousSelectItem<T> {

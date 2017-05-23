@@ -56,18 +56,18 @@ public class MultiViewActivity extends BaseCommonCalendarActivity {
             }
         });
 
-        mWeekDayView.setDayOfWeekCellListener(DEFAULT_WEEK_DAY_LISTENER);
-        mWeekView.setWeekViewListener(DEFAULT_WEEK_VIEW_LISTENER);
-        mWeekListView.setListener(DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER);
-        mWeekListView.setShowWeekDay(true);
-        mMonthListView.setListener(DEFAULT_MONTH_LIST_LISTENER, DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER);
-        mMonthListView.setShowWeekDay(true);
-        mMonthListView.setShowMonthHeader(true);
-        mMonthListView.setShowMonthFooter(true);
-        mYearListView.setListener(DEFAULT_YEAR_LIST_LISTENER, DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER);
-        mYearListView.setShowWeekDay(true);
-        mYearListView.setShowYearHeader(true);
-        mYearListView.setShowYearFooter(true);
+        mWeekDayView.setDayOfWeekCellListener(DEFAULT_WEEK_DAY_LISTENER, true);
+        mWeekView.setWeekViewListener(DEFAULT_WEEK_VIEW_LISTENER, true);
+        mWeekListView.setListener(DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER, false);
+        mWeekListView.setShowWeekDay(true, true);
+        mMonthListView.setListener(DEFAULT_MONTH_LIST_LISTENER, DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER, false);
+        mMonthListView.setShowWeekDay(true, false);
+        mMonthListView.setShowMonthHeader(true, false);
+        mMonthListView.setShowMonthFooter(true, true);
+        mYearListView.setListener(DEFAULT_YEAR_LIST_LISTENER, DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER, false);
+        mYearListView.setShowWeekDay(true, false);
+        mYearListView.setShowYearHeader(true, false);
+        mYearListView.setShowYearFooter(true, true);
 
         mCalendarManager = new CalendarManager();
         mCalendarManager.addCalendarView(mWeekView);
@@ -109,17 +109,17 @@ public class MultiViewActivity extends BaseCommonCalendarActivity {
             ToastUtil.showShortToast(this, "请输入日期（纯数字）");
         }
         mWeekView.setSingleWeek(year, month, day, true);
-        mWeekListView.set(year, month, day, 1);
-        mMonthListView.set(year, month, 1);
-        mYearListView.set(year, 1);
-        mCalendarManager.iterator();
+        mWeekListView.set(year, month, day, 1, true);
+        mMonthListView.set(year, month, 1, true);
+        mYearListView.set(year, 1, true);
+        mCalendarManager.iterator(true);
     }
 
     @Override
     protected void onFirstDayOfWeekChecked(int checkedId) {
         super.onFirstDayOfWeekChecked(checkedId);
         if(mWeekDayView != null && mCalendarManager != null){
-            mWeekDayView.setFirstDayOfWeek(mCalendarManager.getFirstDayOfWeek());
+            mWeekDayView.setFirstDayOfWeek(mCalendarManager.getFirstDayOfWeek(), true);
         }
     }
 }

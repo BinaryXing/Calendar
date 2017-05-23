@@ -45,7 +45,7 @@ public class VPageWeekCalendarActivity extends BaseCommonCalendarActivity {
         });
 
         mCalendarView.setRowHeight(150);
-        mCalendarView.setListener(DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER);
+        mCalendarView.setListener(DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER, true);
 
         mCalendarManager = new CalendarManager();
         mCalendarManager.addCalendarView(mCalendarView);
@@ -83,7 +83,7 @@ public class VPageWeekCalendarActivity extends BaseCommonCalendarActivity {
         } else {
             ToastUtil.showShortToast(this, "请输入月数（纯数字）");
         }
-        mCalendarView.setData(year, month, monthCount);
-        mCalendarManager.iterator();
+        mCalendarView.setData(year, month, monthCount, true);
+        mCalendarManager.iterator(true);
     }
 }

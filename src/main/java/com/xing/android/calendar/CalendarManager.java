@@ -31,7 +31,7 @@ public class CalendarManager<T> implements ICalendarManager<T> {
 
     private List<ICalendarView<T>> mCalendarViewList = new ArrayList<ICalendarView<T>>();
 
-    private DayCellHandlePolicyInfo<T> mClickPolicy = new DayCellHandlePolicyInfo<T>();
+    private DayCellHandlePolicyInfo<T> mDayCellHandlePolicy = new DayCellHandlePolicyInfo<T>();
 
     /**
      * 用于保存SELECT_MODE_SINGLE模式时的数据
@@ -76,8 +76,8 @@ public class CalendarManager<T> implements ICalendarManager<T> {
         setMixPolicy(policyImp.MIX_POLICY_1);
         setMixMultiPolicy(policyImp.MIX_MULTI_POLICY_1);
         DayCellUserInterfaceImp<T> userInterfaceImp = new DayCellUserInterfaceImp<T>();
-        getDayCellUserInterfaceInfo().setClickListener(userInterfaceImp.CLICK_1);
-        getDayCellUserInterfaceInfo().setLongClickListener(userInterfaceImp.LONG_CLICK_1);
+        getDayCellUserInterfaceInfo().setClickConvertListener(userInterfaceImp.CLICK_1);
+        getDayCellUserInterfaceInfo().setLongClickConvertListener(userInterfaceImp.LONG_CLICK_1);
     }
 
     @Override
@@ -118,23 +118,22 @@ public class CalendarManager<T> implements ICalendarManager<T> {
     }
 
     @Override
-    public void setFirstDayOfWeek(int firstDayOfWeek) {
+    public void setFirstDayOfWeek(int firstDayOfWeek, boolean refresh) {
         firstDayOfWeek = CalendarTool.getValidFirstDayOfWeek(firstDayOfWeek);
         if(mFirstDayOfWeek == firstDayOfWeek) {
             LogUtil.i(LOG_TAG, "setFirstDayOfWeek:equal data,mFirstDayOfWeek = " + mFirstDayOfWeek);
             return;
         }
         mFirstDayOfWeek = firstDayOfWeek;
-        for(ICalendarView<T> calendarView : mCalendarViewList) {
-            if(calendarView != null) {
-                calendarView.setFirstDayOfWeek(mFirstDayOfWeek);
-            }
-        }
         setSelectedDaycell(null, false);
         setSelectedDayCellList(null, false);
         setSelectedContinuousItem(null, false);
         setSelectedContinuousItemList(null, false);
-        refreshICalendarViewList();
+        for(ICalendarView<T> calendarView : mCalendarViewList) {
+            if(calendarView != null) {
+                calendarView.setFirstDayOfWeek(mFirstDayOfWeek, refresh);
+            }
+        }
     }
 
     @Override
@@ -143,10 +142,10 @@ public class CalendarManager<T> implements ICalendarManager<T> {
             LogUtil.w(LOG_TAG, "setSinglePolicy:policy is null");
             return;
         }
-        if(mClickPolicy == null) {
-            mClickPolicy = new DayCellHandlePolicyInfo<T>();
+        if(mDayCellHandlePolicy == null) {
+            mDayCellHandlePolicy = new DayCellHandlePolicyInfo<T>();
         }
-        mClickPolicy.setSinglePolicy(policy);
+        mDayCellHandlePolicy.setSinglePolicy(policy);
     }
 
     @Override
@@ -155,10 +154,10 @@ public class CalendarManager<T> implements ICalendarManager<T> {
             LogUtil.w(LOG_TAG, "setMultiPolicy:policy is null");
             return;
         }
-        if(mClickPolicy == null) {
-            mClickPolicy = new DayCellHandlePolicyInfo<T>();
+        if(mDayCellHandlePolicy == null) {
+            mDayCellHandlePolicy = new DayCellHandlePolicyInfo<T>();
         }
-        mClickPolicy.setMultiPolicy(policy);
+        mDayCellHandlePolicy.setMultiPolicy(policy);
     }
 
     @Override
@@ -167,10 +166,10 @@ public class CalendarManager<T> implements ICalendarManager<T> {
             LogUtil.w(LOG_TAG, "setContinuousPolicy:policy is null");
             return;
         }
-        if(mClickPolicy == null) {
-            mClickPolicy = new DayCellHandlePolicyInfo<T>();
+        if(mDayCellHandlePolicy == null) {
+            mDayCellHandlePolicy = new DayCellHandlePolicyInfo<T>();
         }
-        mClickPolicy.setContinuousPolicy(policy);
+        mDayCellHandlePolicy.setContinuousPolicy(policy);
     }
 
     @Override
@@ -179,10 +178,10 @@ public class CalendarManager<T> implements ICalendarManager<T> {
             LogUtil.w(LOG_TAG, "setContinuousMultiPolicy:policy is null");
             return;
         }
-        if(mClickPolicy == null) {
-            mClickPolicy = new DayCellHandlePolicyInfo<T>();
+        if(mDayCellHandlePolicy == null) {
+            mDayCellHandlePolicy = new DayCellHandlePolicyInfo<T>();
         }
-        mClickPolicy.setContinuousMultiPolicy(policy);
+        mDayCellHandlePolicy.setContinuousMultiPolicy(policy);
     }
 
     @Override
@@ -191,10 +190,10 @@ public class CalendarManager<T> implements ICalendarManager<T> {
             LogUtil.w(LOG_TAG, "setMixPolicy:policy is null");
             return;
         }
-        if(mClickPolicy == null) {
-            mClickPolicy = new DayCellHandlePolicyInfo<T>();
+        if(mDayCellHandlePolicy == null) {
+            mDayCellHandlePolicy = new DayCellHandlePolicyInfo<T>();
         }
-        mClickPolicy.setMixPolicy(policy);
+        mDayCellHandlePolicy.setMixPolicy(policy);
     }
 
     @Override
@@ -203,10 +202,10 @@ public class CalendarManager<T> implements ICalendarManager<T> {
             LogUtil.w(LOG_TAG, "setMixMultiPolicy:policy is null");
             return;
         }
-        if(mClickPolicy == null) {
-            mClickPolicy = new DayCellHandlePolicyInfo<T>();
+        if(mDayCellHandlePolicy == null) {
+            mDayCellHandlePolicy = new DayCellHandlePolicyInfo<T>();
         }
-        mClickPolicy.setMixMultiPolicy(policy);
+        mDayCellHandlePolicy.setMixMultiPolicy(policy);
     }
 
     @Override
@@ -228,8 +227,8 @@ public class CalendarManager<T> implements ICalendarManager<T> {
             LogUtil.i(LOG_TAG, "addCalendarView:calendarView is null");
             return;
         }
-        calendarView.setCalendarManager(this);
-        calendarView.setFirstDayOfWeek(mFirstDayOfWeek);
+        calendarView.setCalendarManager(this, false);
+        calendarView.setFirstDayOfWeek(mFirstDayOfWeek, true);
         mCalendarViewList.add(calendarView);
     }
 
@@ -243,8 +242,8 @@ public class CalendarManager<T> implements ICalendarManager<T> {
             if (calendarView == null) {
                 continue;
             }
-            calendarView.setCalendarManager(this);
-            calendarView.setFirstDayOfWeek(mFirstDayOfWeek);
+            calendarView.setCalendarManager(this, false);
+            calendarView.setFirstDayOfWeek(mFirstDayOfWeek, true);
             mCalendarViewList.add(calendarView);
         }
     }
@@ -260,8 +259,8 @@ public class CalendarManager<T> implements ICalendarManager<T> {
             if(calendarView == null) {
                 continue;
             }
-            calendarView.setCalendarManager(this);
-            calendarView.setFirstDayOfWeek(mFirstDayOfWeek);
+            calendarView.setCalendarManager(this, false);
+            calendarView.setFirstDayOfWeek(mFirstDayOfWeek, true);
             mCalendarViewList.add(calendarView);
         }
     }
@@ -312,7 +311,6 @@ public class CalendarManager<T> implements ICalendarManager<T> {
             LogUtil.w(LOG_TAG, "refreshAffectViewList:select mode not match, mSelectMode = " + mSelectMode);
             return;
         }
-        List<ICalendarView<T>> refreshCalendarViewList = new ArrayList<ICalendarView<T>>();
         for(ICalendarView<T> calendarView : mCalendarViewList) {
             if(calendarView == null) {
                 continue;
@@ -479,13 +477,13 @@ public class CalendarManager<T> implements ICalendarManager<T> {
     }
 
     @Override
-    public void setData(List<DayCell<T>> dataList) {
+    public void setData(List<DayCell<T>> dataList, boolean keepOld, boolean refresh) {
         CalendarTool.sortDayCellList(dataList, true);
         for(ICalendarView<T> calendarView : mCalendarViewList) {
             if(calendarView == null) {
                 continue;
             }
-            calendarView.setData(dataList);
+            calendarView.setData(dataList, keepOld, refresh);
         }
     }
 
@@ -497,7 +495,7 @@ public class CalendarManager<T> implements ICalendarManager<T> {
     }
 
     @Override
-    public void iterator() {
+    public void iterator(boolean refresh) {
         if(mCalendarViewList == null || mCalendarViewList.size() == 0) {
             LogUtil.i(LOG_TAG, "foreach:mCalendarViewList is empty");
             return;
@@ -507,7 +505,9 @@ public class CalendarManager<T> implements ICalendarManager<T> {
                 continue;
             }
             view.iterator();
-            view.refresh();
+            if(refresh) {
+                view.refresh();
+            }
         }
     }
 
@@ -519,97 +519,9 @@ public class CalendarManager<T> implements ICalendarManager<T> {
     }
 
     /**
-     * 定制交互功能还未完成，不建议使用该方法
+     * 定制交互方式，目前不支持Touch交互
      * @return
      */
-    @Deprecated
-    @Override
-    public boolean isClickEnable() {
-        return isClickEnable;
-    }
-
-    /**
-     * 定制交互功能还未完成，不建议使用该方法
-     * @param value
-     */
-    @Deprecated
-    @Override
-    public void setClickEnable(boolean value) {
-        if(isClickEnable == value) {
-            LogUtil.i(LOG_TAG, "setClickEnable:equal data,value = " + value);
-            return;
-        }
-        isClickEnable = value;
-        for(ICalendarView<T> iCalendarView : mCalendarViewList) {
-            if(iCalendarView != null) {
-                iCalendarView.refresh();
-            }
-        }
-    }
-
-    /**
-     * 定制交互功能还未完成，不建议使用该方法
-     * @return
-     */
-    @Deprecated
-    @Override
-    public boolean isLongClickEnable() {
-        return isLongClickEnable;
-    }
-
-    /**
-     * 定制交互功能还未完成，不建议使用该方法
-     * @param value
-     */
-    @Deprecated
-    @Override
-    public void setLongClickEnable(boolean value) {
-        if(isLongClickEnable == value) {
-            LogUtil.i(LOG_TAG, "setLongClickEnable:equal data,value = " + value);
-            return;
-        }
-        isLongClickEnable = value;
-        for(ICalendarView<T> iCalendarView : mCalendarViewList) {
-            if(iCalendarView != null) {
-                iCalendarView.refresh();
-            }
-        }
-    }
-
-    /**
-     * 定制交互功能还未完成，不建议使用该方法
-     * @return
-     */
-    @Deprecated
-    @Override
-    public boolean isTouchEnable() {
-        return isTouchEnable;
-    }
-
-    /**
-     * 定制交互功能还未完成，不建议使用该方法
-     * @param value
-     */
-    @Deprecated
-    @Override
-    public void setTouchEnable(boolean value) {
-        if(isTouchEnable == value) {
-            LogUtil.i(LOG_TAG, "setTouchEnable:equal data,value = " + value);
-            return;
-        }
-        isTouchEnable = value;
-        for(ICalendarView<T> iCalendarView : mCalendarViewList) {
-            if(iCalendarView != null) {
-                iCalendarView.refresh();
-            }
-        }
-    }
-
-    /**
-     * 定制交互功能还未完成，不建议使用该方法
-     * @return
-     */
-    @Deprecated
     @Override
     public DayCellUserInterfaceInfo<T> getDayCellUserInterfaceInfo() {
         if(mUserInterfaceInfo == null) {
@@ -635,12 +547,12 @@ public class CalendarManager<T> implements ICalendarManager<T> {
         if(dayCell == null) {
             LogUtil.w(LOG_TAG, "handleDayCellForSingle:dayCell is null");
             return;
-        } else if(mClickPolicy == null || mClickPolicy.getSinglePolicy() == null) {
+        } else if(mDayCellHandlePolicy == null || mDayCellHandlePolicy.getSinglePolicy() == null) {
             LogUtil.w(LOG_TAG, "handleDayCellForSingle:singlePolicy is null");
             return;
         }
 
-        boolean hasRefreshView = mClickPolicy.getSinglePolicy().handleForSingle(this, dayCell, mSelectedDayCell);
+        boolean hasRefreshView = mDayCellHandlePolicy.getSinglePolicy().handleForSingle(this, dayCell, mSelectedDayCell);
         if(!hasRefreshView) {
             refreshICalendarViewList();
         }
@@ -650,12 +562,12 @@ public class CalendarManager<T> implements ICalendarManager<T> {
         if(dayCell == null) {
             LogUtil.w(LOG_TAG, "handleDayCellForMulti:dayCell is null");
             return;
-        } else if(mClickPolicy == null || mClickPolicy.getMultiPolicy() == null) {
+        } else if(mDayCellHandlePolicy == null || mDayCellHandlePolicy.getMultiPolicy() == null) {
             LogUtil.w(LOG_TAG, "handleDayCellForMulti:multiPolicy is null");
             return;
         }
 
-        boolean hasRefreshView = mClickPolicy.getMultiPolicy().handleForMulti(this, dayCell, mSelectedDayCellList);
+        boolean hasRefreshView = mDayCellHandlePolicy.getMultiPolicy().handleForMulti(this, dayCell, mSelectedDayCellList);
         if(!hasRefreshView) {
             refreshICalendarViewList();
         }
@@ -665,12 +577,12 @@ public class CalendarManager<T> implements ICalendarManager<T> {
         if(dayCell == null) {
             LogUtil.w(LOG_TAG, "handleDayCellForContinuous:dayCell is null");
             return;
-        } else if(mClickPolicy == null || mClickPolicy.getContinuousPolicy() == null) {
+        } else if(mDayCellHandlePolicy == null || mDayCellHandlePolicy.getContinuousPolicy() == null) {
             LogUtil.w(LOG_TAG, "handleDayCellForContinuous:continuousPolicy is null");
             return;
         }
 
-        boolean hasRefreshView = mClickPolicy.getContinuousPolicy().handleForContinuous(this, dayCell, mSelectedContinuousItem);
+        boolean hasRefreshView = mDayCellHandlePolicy.getContinuousPolicy().handleForContinuous(this, dayCell, mSelectedContinuousItem);
         if(!hasRefreshView) {
             refreshICalendarViewList();
         }
@@ -680,12 +592,12 @@ public class CalendarManager<T> implements ICalendarManager<T> {
         if(dayCell == null) {
             LogUtil.w(LOG_TAG, "handleDayCellForContinuousMulti:dayCell is null");
             return;
-        } else if(mClickPolicy == null || mClickPolicy.getContinuousMultiPolicy() == null) {
+        } else if(mDayCellHandlePolicy == null || mDayCellHandlePolicy.getContinuousMultiPolicy() == null) {
             LogUtil.w(LOG_TAG, "handleDayCellForContinuousMulti:continuousMultiPolicy is null");
             return;
         }
 
-        boolean hasRefreshView = mClickPolicy.getContinuousMultiPolicy().handleForContinuousMulti(this, dayCell, mSelectedContinuousItemList);
+        boolean hasRefreshView = mDayCellHandlePolicy.getContinuousMultiPolicy().handleForContinuousMulti(this, dayCell, mSelectedContinuousItemList);
         if(!hasRefreshView) {
             refreshICalendarViewList();
         }
@@ -695,12 +607,12 @@ public class CalendarManager<T> implements ICalendarManager<T> {
         if(dayCell == null) {
             LogUtil.w(LOG_TAG, "handleDayCellForMix:dayCell is null");
             return;
-        } else if(mClickPolicy == null || mClickPolicy.getMixPolicy() == null) {
+        } else if(mDayCellHandlePolicy == null || mDayCellHandlePolicy.getMixPolicy() == null) {
             LogUtil.w(LOG_TAG, "handleDayCellForMix:mixPolicy is null");
             return;
         }
 
-        boolean hasRefreshView = mClickPolicy.getMixPolicy().handleForMix(this, dayCell, mSelectedContinuousItem);
+        boolean hasRefreshView = mDayCellHandlePolicy.getMixPolicy().handleForMix(this, dayCell, mSelectedContinuousItem);
         if(!hasRefreshView) {
             refreshICalendarViewList();
         }
@@ -710,12 +622,12 @@ public class CalendarManager<T> implements ICalendarManager<T> {
         if(dayCell == null) {
             LogUtil.w(LOG_TAG, "handleDayCellForMixMulti:dayCell is null");
             return;
-        } else if(mClickPolicy == null || mClickPolicy.getMixMultiPolicy() == null) {
+        } else if(mDayCellHandlePolicy == null || mDayCellHandlePolicy.getMixMultiPolicy() == null) {
             LogUtil.w(LOG_TAG, "handleDayCellForMixMulti:mixMultiPolicy is null");
             return;
         }
 
-        boolean hasRefreshView = mClickPolicy.getMixMultiPolicy().handleForMixMulti(this, dayCell, mSelectedContinuousItemList);
+        boolean hasRefreshView = mDayCellHandlePolicy.getMixMultiPolicy().handleForMixMulti(this, dayCell, mSelectedContinuousItemList);
         if(!hasRefreshView) {
             refreshICalendarViewList();
         }

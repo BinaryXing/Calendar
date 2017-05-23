@@ -42,10 +42,10 @@ public class YearListActivity extends BaseCommonCalendarActivity {
             }
         });
 
-        mYearListView.setListener(DEFAULT_YEAR_LIST_LISTENER, DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER);
-        mYearListView.setShowWeekDay(true);
-        mYearListView.setShowYearHeader(true);
-        mYearListView.setShowYearFooter(true);
+        mYearListView.setListener(DEFAULT_YEAR_LIST_LISTENER, DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER, false);
+        mYearListView.setShowWeekDay(true, false);
+        mYearListView.setShowYearHeader(true, false);
+        mYearListView.setShowYearFooter(true, true);
 
         mCalendarManager = new CalendarManager();
         mCalendarManager.addCalendarView(mYearListView);
@@ -73,7 +73,7 @@ public class YearListActivity extends BaseCommonCalendarActivity {
         } else {
             ToastUtil.showShortToast(this, "请输入年数（纯数字）");
         }
-        mYearListView.set(year, yearCount);
-        mCalendarManager.iterator();
+        mYearListView.set(year, yearCount, true);
+        mCalendarManager.iterator(true);
     }
 }

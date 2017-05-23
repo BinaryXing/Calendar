@@ -46,8 +46,8 @@ public class WeekListActivity extends BaseCommonCalendarActivity {
             }
         });
 
-        mWeekListView.setListener(DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER);
-        mWeekListView.setShowWeekDay(true);
+        mWeekListView.setListener(DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER, false);
+        mWeekListView.setShowWeekDay(true, true);
 
         mCalendarManager = new CalendarManager();
         mCalendarManager.addCalendarView(mWeekListView);
@@ -95,7 +95,7 @@ public class WeekListActivity extends BaseCommonCalendarActivity {
         } else {
             ToastUtil.showShortToast(this, "请输入周数（纯数字）");
         }
-        mWeekListView.set(year, month, day, weekCount);
-        mCalendarManager.iterator();
+        mWeekListView.set(year, month, day, weekCount, true);
+        mCalendarManager.iterator(true);
     }
 }

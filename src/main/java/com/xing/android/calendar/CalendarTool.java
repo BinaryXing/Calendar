@@ -1,9 +1,12 @@
 package com.xing.android.calendar;
 
+import android.support.annotation.NonNull;
+
 import com.xing.android.calendar.model.ContinuousSelectItem;
 import com.xing.android.calendar.model.DayCell;
 import com.xing.android.calendar.util.LogUtil;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,27 +14,39 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 日历选择框架里涉及的一些静态方法
  * Created by zhaoxx on 16/3/9.
  */
 public class CalendarTool {
+
     private static final String LOG_TAG = "CalendarTool";
 
-    public static <T>boolean isEqual(DayCell<T> firstDayCell, DayCell<T> secondDayCell) {
+    /**
+     * 判断两个DayCell是否是同一天；
+     * 对参数不做有效校验，比如两个2012-13-59的DayCell，返回true；
+     * 不做DayCell中的Data比较；
+     * @param firstDayCell 非空
+     * @param secondDayCell 非空
+     * @return 如果有Cell为null，返回false
+     */
+    public static boolean isEqual(DayCell firstDayCell, DayCell secondDayCell) {
         if(firstDayCell == null || secondDayCell == null) {
-            LogUtil.w(LOG_TAG, "isEqual:firstDayCell = " + firstDayCell + ",secondDayCell = " + secondDayCell);
             return false;
         }
-        if(firstDayCell.getYear() == secondDayCell.getYear()
+        return firstDayCell.getYear() == secondDayCell.getYear()
                 && firstDayCell.getMonth() == secondDayCell.getMonth()
-                && firstDayCell.getDay() == secondDayCell.getDay()) {
-            return true;
-        }
-        return false;
+                && firstDayCell.getDay() == secondDayCell.getDay();
     }
 
-    public static <T>boolean isBefore(DayCell<T> firstDayCell, DayCell<T> secondDayCell) {
+    /**
+     * 判断firstDayCell是否在secondDayCell的前面；
+     * 不做DayCell中的Data比较；
+     * @param firstDayCell 非空
+     * @param secondDayCell 非空
+     * @return 如果有Cell为null，返回false
+     */
+    public static boolean isBefore(DayCell firstDayCell, DayCell secondDayCell) {
         if(firstDayCell == null || secondDayCell == null) {
-            LogUtil.w(LOG_TAG, "isBefore:firstDayCell = " + firstDayCell + ",secondDayCell = " + secondDayCell);
             return false;
         }
         Calendar first = Calendar.getInstance();
@@ -43,9 +58,15 @@ public class CalendarTool {
         return first.before(second);
     }
 
-    public static <T>boolean isAfter(DayCell<T> firstDayCell, DayCell<T> secondDayCell) {
+    /**
+     * 判断firstDayCell是否在secondDayCell的后面；
+     * 不做DayCell中的Data比较；
+     * @param firstDayCell 非空
+     * @param secondDayCell 非空
+     * @return 如果有Cell为null，返回false
+     */
+    public static boolean isAfter(DayCell firstDayCell, DayCell secondDayCell) {
         if(firstDayCell == null || secondDayCell == null) {
-            LogUtil.w(LOG_TAG, "isAfter:firstDayCell = " + firstDayCell + ",secondDayCell = " + secondDayCell);
             return false;
         }
         Calendar first = Calendar.getInstance();
@@ -55,6 +76,11 @@ public class CalendarTool {
         return first.after(second);
     }
 
+    /**
+     * 获取有效的一周的第一天，如果firstDayOfWeek无效，则默认周日
+     * @param firstDayOfWeek
+     * @return
+     */
     public static int getValidFirstDayOfWeek(int firstDayOfWeek) {
         if(firstDayOfWeek < Calendar.SUNDAY || firstDayOfWeek > Calendar.SATURDAY) {
             firstDayOfWeek = Calendar.SUNDAY;
@@ -62,6 +88,24 @@ public class CalendarTool {
         return firstDayOfWeek;
     }
 
+    /**
+     * 获取一周的最后一天
+     * @param firstDayOfWeek
+     * @return
+     */
+    public static int getLastDayOfWeek(int firstDayOfWeek) {
+        firstDayOfWeek = getValidFirstDayOfWeek(firstDayOfWeek);
+        return (firstDayOfWeek + 5) % 7 + 1;
+    }
+
+    /**
+     * 校验某一天是否有效
+     * @param firstDayOfWeek
+     * @param year
+     * @param month
+     * @param day
+     * @return
+     */
     public static boolean checkValidOfDay(int firstDayOfWeek, int year, int month, int day) {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
@@ -84,6 +128,14 @@ public class CalendarTool {
         return true;
     }
 
+    /**
+     * 校验某年某月某周是否有效
+     * @param firstDayOfWeek
+     * @param year
+     * @param month
+     * @param week
+     * @return
+     */
     public static boolean checkValidOfWeek(int firstDayOfWeek, int year, int month, int week) {
         Calendar calendar = Calendar.getInstance();
         calendar.setFirstDayOfWeek(firstDayOfWeek);
@@ -105,20 +157,13 @@ public class CalendarTool {
         return true;
     }
 
-    public static <T>void setContinuousItemValid(ContinuousSelectItem<T> item) {
-        if(item == null) {
-            return;
-        }
-        if(item.mStartDayCell == null && item.mEndDayCell != null) {
-            item.mStartDayCell = item.mEndDayCell;
-            item.mEndDayCell = null;
-        } else if(item.mStartDayCell != null && item.mEndDayCell != null && CalendarTool.isAfter(item.mStartDayCell, item.mEndDayCell)) {
-            DayCell<T> tmpDayCell = item.mStartDayCell;
-            item.mStartDayCell = item.mEndDayCell;
-            item.mEndDayCell = tmpDayCell;
-        }
-    }
-
+    /**
+     * 校验某年某周是否有效
+     * @param firstDayOfWeek
+     * @param year
+     * @param week
+     * @return
+     */
     public static boolean checkValidOfWeek(int firstDayOfWeek, int year, int week) {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
@@ -140,6 +185,12 @@ public class CalendarTool {
         return true;
     }
 
+    /**
+     * 校验某年某月是否有效
+     * @param year
+     * @param month
+     * @return
+     */
     public static boolean checkValidOfMonth(int year, int month) {
         Calendar calendar = Calendar.getInstance();
         if(year < 0) {
@@ -155,7 +206,32 @@ public class CalendarTool {
         return true;
     }
 
-    public static <T>Calendar getCalendar(DayCell<T> dayCell) {
+    /**
+     * ContinuousSelectItem设置成合理数据
+     * @param item
+     */
+    public static void setContinuousItemValid(ContinuousSelectItem item) {
+        if(item == null) {
+            return;
+        }
+        if(item.mStartDayCell == null && item.mEndDayCell != null) {
+            //如果mStartDayCell为空，mEndDayCell不为空，则互换
+            item.mStartDayCell = item.mEndDayCell;
+            item.mEndDayCell = null;
+        } else if(item.mStartDayCell != null && item.mEndDayCell != null && CalendarTool.isAfter(item.mStartDayCell, item.mEndDayCell)) {
+            //如果mStartDayCell，mEndDayCell都不为空，如果mStartDayCell大于mEndDayCell，互换
+            DayCell tmpDayCell = item.mStartDayCell;
+            item.mStartDayCell = item.mEndDayCell;
+            item.mEndDayCell = tmpDayCell;
+        }
+    }
+
+    /**
+     * 返回DayCell对应的Calendar
+     * @param dayCell
+     * @return
+     */
+    public static Calendar getCalendar(DayCell dayCell) {
         if(dayCell == null) {
             return null;
         }
@@ -165,7 +241,12 @@ public class CalendarTool {
         return calendar;
     }
 
-    public static <T>Date getDate(DayCell<T> dayCell) {
+    /**
+     * 返回DayCell对应的Date
+     * @param dayCell
+     * @return
+     */
+    public static Date getDate(DayCell dayCell) {
         Calendar calendar = getCalendar(dayCell);
         if(calendar == null) {
             return null;
@@ -173,6 +254,13 @@ public class CalendarTool {
         return calendar.getTime();
     }
 
+    /**
+     * 返回Calendar对应的DayCell
+     * @param calendar
+     * @param t
+     * @param <T>
+     * @return
+     */
     public static <T> DayCell<T> getDayCell(Calendar calendar, T t) {
         if(calendar == null) {
             return null;
@@ -186,15 +274,14 @@ public class CalendarTool {
      * 间隔天数,开始日期和结束日期也包括在内
      * @param firstDayCell
      * @param secondDayCell
-     * @param <T>
      * @return
      */
-    public static <T>int getInclusiveIntervalDays(DayCell<T> firstDayCell, DayCell<T> secondDayCell) {
+    public static int getInclusiveIntervalDays(DayCell firstDayCell, DayCell secondDayCell) {
         if(firstDayCell == null || secondDayCell == null) {
             return -1;
         }
         if(isAfter(firstDayCell, secondDayCell)) {
-            DayCell<T> dayCell = firstDayCell;
+            DayCell dayCell = firstDayCell;
             firstDayCell = secondDayCell;
             secondDayCell = dayCell;
         }
@@ -207,7 +294,6 @@ public class CalendarTool {
      * 对DayCell列表进行排序
      * @param list 数据List
      * @param asc 是否升序
-     * @param <T>
      */
     public static <T>void sortDayCellList(List<DayCell<T>> list, final boolean asc) {
         if(list == null || list.size() == 0) {
@@ -232,8 +318,7 @@ public class CalendarTool {
     /**
      * 对ContinuousItem列表进行排序，ContinuousItem不能有交叉
      * @param list 数据List
-     * @param asc
-     * @param <T>
+     * @param asc 是否升序
      */
     public static <T>void sortContinuousItemList(List<ContinuousSelectItem<T>> list, final boolean asc) {
         if(list == null || list.size() == 0) {
@@ -249,18 +334,12 @@ public class CalendarTool {
                 }
                 setContinuousItemValid(lhs);
                 setContinuousItemValid(rhs);
-                DayCell<T> leftCell = null;
-                DayCell<T> rightCell = null;
+                DayCell<T> leftCell = lhs.mStartDayCell;
                 if(lhs.mEndDayCell != null) {
                     leftCell = lhs.mEndDayCell;
-                } else if(lhs.mStartDayCell != null) {
-                    leftCell = lhs.mStartDayCell;
                 }
-                if(rhs.mStartDayCell != null) {
-                    rightCell = rhs.mStartDayCell;
-                } else if(rhs.mEndDayCell != null) {
-                    rightCell = rhs.mEndDayCell;
-                }
+                DayCell<T> rightCell = rhs.mStartDayCell;
+
                 if(asc) {
                     return isBefore(leftCell, rightCell) ? -1 : 1;
                 } else {
@@ -270,71 +349,97 @@ public class CalendarTool {
         });
     }
 
-    public static <T>boolean isContinuousItemCross(ContinuousSelectItem<T> leftItem, ContinuousSelectItem<T> rightItem) {
+    /**
+     * 是否两个ContinuousSelectItem有交叉
+     * @param leftItem
+     * @param rightItem
+     * @return
+     */
+    public static boolean isContinuousItemCross(ContinuousSelectItem leftItem, ContinuousSelectItem rightItem) {
         setContinuousItemValid(leftItem);
         setContinuousItemValid(rightItem);
-        if(leftItem == null || (leftItem.mStartDayCell == null && leftItem.mEndDayCell == null) ||
+        if (leftItem == null || (leftItem.mStartDayCell == null && leftItem.mEndDayCell == null) ||
                 rightItem == null || (rightItem.mStartDayCell == null && rightItem.mEndDayCell == null)) {
             LogUtil.i(LOG_TAG, "isContinuousItemCross:empty item,leftItem = " + leftItem + ", rightItem = " + rightItem);
             return false;
-        } else {
-            ContinuousSelectItem<T> localLeftItem = leftItem.getCopyContinuousSelectItem();
-            ContinuousSelectItem<T> localRightItem = rightItem.getCopyContinuousSelectItem();
-            //如果只有开始日期，没有结束日期，可以Item当作开始和结束日期一样
-            if(localLeftItem.mEndDayCell == null) {
-                localLeftItem.mEndDayCell = localLeftItem.mStartDayCell;
-            }
-            //如果只有开始日期，没有结束日期，可以Item当作开始和结束日期一样
-            if(localRightItem.mEndDayCell == null) {
-                localRightItem.mEndDayCell = localRightItem.mStartDayCell;
-            }
-            if(!(isBefore(localLeftItem.mEndDayCell, localRightItem.mStartDayCell) || (isAfter(localLeftItem.mStartDayCell, localRightItem.mEndDayCell)))) {
-                return true;
-            }
+        }
+        ContinuousSelectItem localLeftItem = leftItem.getCopyContinuousSelectItem();
+        ContinuousSelectItem localRightItem = rightItem.getCopyContinuousSelectItem();
+        //如果只有开始日期，没有结束日期，可以Item当作开始和结束日期一样
+        if (localLeftItem.mEndDayCell == null) {
+            localLeftItem.mEndDayCell = localLeftItem.mStartDayCell;
+        }
+        //如果只有开始日期，没有结束日期，可以Item当作开始和结束日期一样
+        if (localRightItem.mEndDayCell == null) {
+            localRightItem.mEndDayCell = localRightItem.mStartDayCell;
+        }
+        if (!(isBefore(localLeftItem.mEndDayCell, localRightItem.mStartDayCell) || (isAfter(localLeftItem.mStartDayCell, localRightItem.mEndDayCell)))) {
+            return true;
         }
         return false;
     }
 
-    public static <T>boolean isEqual(ContinuousSelectItem<T> leftItem, ContinuousSelectItem<T> rightItem) {
+    /**
+     * 判断两个ContinuousSelectItem是否相等；
+     * 不做有效校验；
+     * 不做Data比较；
+     * @param leftItem
+     * @param rightItem
+     * @return
+     */
+    public static boolean isEqual(ContinuousSelectItem leftItem, ContinuousSelectItem rightItem) {
         setContinuousItemValid(leftItem);
         setContinuousItemValid(rightItem);
         if(leftItem == null || (leftItem.mStartDayCell == null && leftItem.mEndDayCell == null) ||
                 rightItem == null || (rightItem.mStartDayCell == null && rightItem.mEndDayCell == null)) {
             LogUtil.i(LOG_TAG, "isEqual:empty item,leftItem = " + leftItem + ", rightItem = " + rightItem);
             return false;
-        } else if(leftItem.mStartDayCell != null && leftItem.mEndDayCell == null &&
-                rightItem.mStartDayCell != null && rightItem.mEndDayCell == null &&
-                isEqual(leftItem.mStartDayCell, rightItem.mStartDayCell)) {
+        } else if(leftItem.mStartDayCell != null && leftItem.mEndDayCell == null
+                && rightItem.mStartDayCell != null && rightItem.mEndDayCell == null
+                && isEqual(leftItem.mStartDayCell, rightItem.mStartDayCell)) {
             return true;
-        } else if(leftItem.mStartDayCell != null && leftItem.mEndDayCell != null &&
-                rightItem.mStartDayCell != null && rightItem.mEndDayCell != null &&
-                isEqual(leftItem.mStartDayCell, rightItem.mStartDayCell) && isEqual(leftItem.mEndDayCell, rightItem.mEndDayCell)) {
+        } else if(leftItem.mStartDayCell != null && leftItem.mEndDayCell != null
+                && rightItem.mStartDayCell != null && rightItem.mEndDayCell != null
+                && isEqual(leftItem.mStartDayCell, rightItem.mStartDayCell)
+                && isEqual(leftItem.mEndDayCell, rightItem.mEndDayCell)) {
             return true;
         }
         return false;
     }
 
-
-    public static <T>boolean isBefore(ContinuousSelectItem<T> leftItem, ContinuousSelectItem<T> rightItem) {
+    /**
+     * 判断leftItem是否在rightItem的前面；
+     * 不做有效校验；
+     * 不做Data比较；
+     * @param leftItem
+     * @param rightItem
+     * @return
+     */
+    public static boolean isBefore(ContinuousSelectItem leftItem, ContinuousSelectItem rightItem) {
         setContinuousItemValid(leftItem);
         setContinuousItemValid(rightItem);
-        if(leftItem == null || (leftItem.mStartDayCell == null && leftItem.mEndDayCell == null) ||
+        if (leftItem == null || (leftItem.mStartDayCell == null && leftItem.mEndDayCell == null) ||
                 rightItem == null || (rightItem.mStartDayCell == null && rightItem.mEndDayCell == null)) {
             LogUtil.i(LOG_TAG, "isBefore:empty item,leftItem = " + leftItem + ", rightItem = " + rightItem);
             return false;
-        } else {
-            DayCell<T> leftCell;
-            if(leftItem.mEndDayCell != null) {
-                leftCell = leftItem.mEndDayCell;
-            } else {
-                leftCell = leftItem.mStartDayCell;
-            }
-            DayCell<T> rightCell = rightItem.mStartDayCell;
-            return isBefore(leftCell, rightCell);
         }
+        DayCell leftCell = leftItem.mStartDayCell;
+        if (leftItem.mEndDayCell != null) {
+            leftCell = leftItem.mEndDayCell;
+        }
+        DayCell rightCell = rightItem.mStartDayCell;
+        return isBefore(leftCell, rightCell);
     }
 
-    public static <T>boolean isAfter(ContinuousSelectItem<T> leftItem, ContinuousSelectItem<T> rightItem) {
+    /**
+     * 判断leftItem是否在rightItem的后面；
+     * 不做有效校验；
+     * 不做Data比较；
+     * @param leftItem
+     * @param rightItem
+     * @return
+     */
+    public static boolean isAfter(ContinuousSelectItem leftItem, ContinuousSelectItem rightItem) {
         setContinuousItemValid(leftItem);
         setContinuousItemValid(rightItem);
         if(leftItem == null || (leftItem.mStartDayCell == null && leftItem.mEndDayCell == null) ||
@@ -342,8 +447,8 @@ public class CalendarTool {
             LogUtil.i(LOG_TAG, "isAfter:empty item,leftItem = " + leftItem + ", rightItem = " + rightItem);
             return false;
         } else {
-            DayCell<T> leftCell = leftItem.mStartDayCell;
-            DayCell<T> rightCell;
+            DayCell leftCell = leftItem.mStartDayCell;
+            DayCell rightCell;
             if(rightItem.mEndDayCell != null) {
                 rightCell = rightItem.mEndDayCell;
             } else {
@@ -353,7 +458,13 @@ public class CalendarTool {
         }
     }
 
-    public static <T>boolean isBefore(DayCell<T> leftCell, ContinuousSelectItem<T> rightItem) {
+    /**
+     * 判断DayCell是否在ContinuousSelectItem的前面
+     * @param leftCell
+     * @param rightItem
+     * @return
+     */
+    public static boolean isBefore(DayCell leftCell, ContinuousSelectItem rightItem) {
         if(leftCell == null) {
             LogUtil.i(LOG_TAG, "isBefore:leftCell is null");
             return false;
@@ -362,11 +473,17 @@ public class CalendarTool {
             return false;
         }
         setContinuousItemValid(rightItem);
-        DayCell<T> rightCell = rightItem.mStartDayCell;
+        DayCell rightCell = rightItem.mStartDayCell;
         return isBefore(leftCell, rightCell);
     }
 
-    public static <T>boolean isAfter(DayCell<T> leftCell, ContinuousSelectItem<T> rightItem) {
+    /**
+     * 判断DayCell是否在ContinuousSelectItem的后面
+     * @param leftCell
+     * @param rightItem
+     * @return
+     */
+    public static boolean isAfter(DayCell leftCell, ContinuousSelectItem rightItem) {
         if(leftCell == null) {
             LogUtil.i(LOG_TAG, "isAfter:leftCell is null");
             return false;
@@ -375,16 +492,20 @@ public class CalendarTool {
             return false;
         }
         setContinuousItemValid(rightItem);
-        DayCell<T> rightCell;
+        DayCell rightCell = rightItem.mStartDayCell;
         if(rightItem.mEndDayCell != null) {
             rightCell = rightItem.mEndDayCell;
-        } else {
-            rightCell = rightItem.mStartDayCell;
         }
         return isAfter(leftCell, rightCell);
     }
 
-    public static <T>boolean isBefore(ContinuousSelectItem<T> leftItem, DayCell<T> rightCell) {
+    /**
+     * 判断ContinuousSelectItem是否在DayCell的前面
+     * @param leftItem
+     * @param rightCell
+     * @return
+     */
+    public static boolean isBefore(ContinuousSelectItem leftItem, DayCell rightCell) {
         if(rightCell == null) {
             LogUtil.i(LOG_TAG, "isBefore:rightCell is null");
             return false;
@@ -393,16 +514,20 @@ public class CalendarTool {
             return false;
         }
         setContinuousItemValid(leftItem);
-        DayCell<T> leftCell;
+        DayCell leftCell = leftItem.mStartDayCell;
         if(leftItem.mEndDayCell != null) {
             leftCell = leftItem.mEndDayCell;
-        } else {
-            leftCell = leftItem.mStartDayCell;
         }
         return isBefore(leftCell, rightCell);
     }
 
-    public static <T>boolean isAfter(ContinuousSelectItem<T> leftItem, DayCell<T> rightCell) {
+    /**
+     * 判断ContinuousSelectItem是否在DayCell的后面
+     * @param leftItem
+     * @param rightCell
+     * @return
+     */
+    public static boolean isAfter(ContinuousSelectItem leftItem, DayCell rightCell) {
         if(rightCell == null) {
             LogUtil.i(LOG_TAG, "isAfter:rightCell is null");
             return false;
@@ -411,7 +536,7 @@ public class CalendarTool {
             return false;
         }
         setContinuousItemValid(leftItem);
-        DayCell<T> leftCell = leftItem.mStartDayCell;
+        DayCell leftCell = leftItem.mStartDayCell;
         return isAfter(leftCell, rightCell);
     }
 
@@ -419,10 +544,9 @@ public class CalendarTool {
      * cell是否属于item（包括开始/结束日期）
      * @param cell
      * @param item
-     * @param <T>
      * @return
      */
-    public static <T>boolean isInClusive(DayCell<T> cell, ContinuousSelectItem<T> item) {
+    public static boolean isInClusive(DayCell cell, ContinuousSelectItem item) {
         if(cell == null) {
             LogUtil.i(LOG_TAG, "isInClusive:cell is null");
             return false;
@@ -438,7 +562,13 @@ public class CalendarTool {
         }
     }
 
-    public static <T>boolean isExClusive(DayCell<T> cell, ContinuousSelectItem<T> item) {
+    /**
+     * cell是否属于item（不包括开始／结束日期）
+     * @param cell
+     * @param item
+     * @return
+     */
+    public static boolean isExClusive(DayCell cell, ContinuousSelectItem item) {
         if(cell == null) {
             LogUtil.i(LOG_TAG, "isExClusive:cell is null");
             return false;
@@ -450,12 +580,16 @@ public class CalendarTool {
         return isAfter(cell, item.mStartDayCell) && isBefore(cell, item.mEndDayCell);
     }
 
-    public static <T>void clearNullDayCell(List<DayCell<T>> list) {
+    /**
+     * 清除Null的DayCell
+     * @param list
+     */
+    public static void clearNullDayCell(List<DayCell> list) {
         if(list == null || list.size() == 0) {
             LogUtil.i(LOG_TAG, "clearNullDayCell:list is empty");
             return;
         }
-        DayCell<T> cell;
+        DayCell cell;
         for(int i = list.size() - 1 ; i >= 0 ; i--) {
             cell = list.get(i);
             if(cell == null) {
@@ -464,6 +598,10 @@ public class CalendarTool {
         }
     }
 
+    /**
+     * 清除Null的ContinuousSelectItem
+     * @param list
+     */
     public static <T>void  clearNullContinuousItem(List<ContinuousSelectItem<T>> list) {
         if(list == null || list.size() == 0) {
             LogUtil.i(LOG_TAG, "clearNullContinuousItem:list is empty");
@@ -478,9 +616,32 @@ public class CalendarTool {
         }
     }
 
-    public static int getLastDayOfWeek(int firstDayOfWeek) {
-        firstDayOfWeek = getValidFirstDayOfWeek(firstDayOfWeek);
-        return (firstDayOfWeek + 5) % 7 + 1;
+    public static <T>List<DayCell<T>> getCopyDayCellList(List<DayCell<T>> list) {
+        List<DayCell<T>> result = new ArrayList<DayCell<T>>();
+        if(list == null) {
+            return result;
+        }
+        for(DayCell<T> cell : list) {
+            if(cell == null) {
+                continue;
+            }
+            result.add(cell.getCopyDayCell());
+        }
+        return result;
+    }
+
+    public static <T>List<ContinuousSelectItem<T>> getCopyContinuousItemList(List<ContinuousSelectItem<T>> list) {
+        List<ContinuousSelectItem<T>> result = new ArrayList<ContinuousSelectItem<T>>();
+        if(list == null) {
+            return result;
+        }
+        for(ContinuousSelectItem<T> item : list) {
+            if(item == null) {
+                continue;
+            }
+            result.add(item.getCopyContinuousSelectItem());
+        }
+        return result;
     }
 
 }

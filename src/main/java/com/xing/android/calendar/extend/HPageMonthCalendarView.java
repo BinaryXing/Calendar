@@ -72,7 +72,7 @@ public class HPageMonthCalendarView<T> extends LinearLayout {
         mCalendarManager = new CalendarManager();
     }
 
-    public void setListener(MonthListView.MonthListListener monthListListener, WeekDayView.WeekDayListener weekDayListener, WeekView.WeekViewListener<T> weekViewListener) {
+    public void setListener(MonthListView.MonthListListener monthListListener, WeekDayView.WeekDayListener weekDayListener, WeekView.WeekViewListener<T> weekViewListener, boolean refresh) {
         if(mMonthListListener != monthListListener || mWeekDayListener != weekDayListener || mWeekViewListener != weekViewListener) {
             mMonthListListener = monthListListener;
             mWeekDayListener = weekDayListener;
@@ -81,7 +81,7 @@ public class HPageMonthCalendarView<T> extends LinearLayout {
                 if(view == null) {
                     continue;
                 }
-                view.setListener(mMonthListListener, mWeekDayListener, mWeekViewListener);
+                view.setListener(mMonthListListener, mWeekDayListener, mWeekViewListener, refresh);
             }
             if(mListener != null) {
                 mListener.onCalendarHeightChange(mPagerView, isShowWeekDay, isShowMonthHeader, isShowMonthFooter);
@@ -89,7 +89,7 @@ public class HPageMonthCalendarView<T> extends LinearLayout {
         }
     }
 
-    public void setShowWeekDay(boolean value) {
+    public void setShowWeekDay(boolean value, boolean refresh) {
         if(isShowWeekDay = value) {
             LogUtil.i(LOG_TAG, "setShowWeekDay:equal data, value = " + value);
             return;
@@ -97,7 +97,7 @@ public class HPageMonthCalendarView<T> extends LinearLayout {
         isShowWeekDay = value;
         for(MonthListView<T> monthListView : mMonthList) {
             if(monthListView != null) {
-                monthListView.setShowWeekDay(isShowWeekDay);
+                monthListView.setShowWeekDay(isShowWeekDay, refresh);
             }
         }
         if(mListener != null) {
@@ -105,7 +105,7 @@ public class HPageMonthCalendarView<T> extends LinearLayout {
         }
     }
 
-    public void setShowMonthHeader(boolean value) {
+    public void setShowMonthHeader(boolean value, boolean refresh) {
         if(isShowMonthHeader == value) {
             LogUtil.i(LOG_TAG, "setShowMonthHeader:equal data, value = " + value);
             return;
@@ -113,7 +113,7 @@ public class HPageMonthCalendarView<T> extends LinearLayout {
         isShowMonthHeader = value;
         for(MonthListView<T> monthListView : mMonthList) {
             if(monthListView != null) {
-                monthListView.setShowMonthHeader(isShowMonthHeader);
+                monthListView.setShowMonthHeader(isShowMonthHeader, refresh);
             }
         }
         if(mListener != null) {
@@ -121,14 +121,14 @@ public class HPageMonthCalendarView<T> extends LinearLayout {
         }
     }
 
-    public void setShowMonthFooter(boolean value) {
+    public void setShowMonthFooter(boolean value, boolean refresh) {
         if(isShowMonthFooter == value) {
             LogUtil.i(LOG_TAG, "setShowMonthFooter:equal data, value = " + value);
         }
         isShowMonthFooter = value;
         for(MonthListView<T> monthListView : mMonthList) {
             if(monthListView != null) {
-                monthListView.setShowMonthFooter(isShowMonthFooter);
+                monthListView.setShowMonthFooter(isShowMonthFooter, refresh);
             }
         }
         if(mListener != null) {
@@ -148,18 +148,18 @@ public class HPageMonthCalendarView<T> extends LinearLayout {
         set(startYear, startMonth, monthCount, mFirstDayOfWeek);
     }
 
-    public void set(int startYear, int startMonth, int monthCount, int firstDayofWeek) {
-        firstDayofWeek = CalendarTool.getValidFirstDayOfWeek(firstDayofWeek);
-        if(mStartYear == startYear && mStartMonth == startMonth && mMonthCount == monthCount && mFirstDayOfWeek == firstDayofWeek) {
+    public void set(int startYear, int startMonth, int monthCount, int firstDayOfWeek) {
+        firstDayOfWeek = CalendarTool.getValidFirstDayOfWeek(firstDayOfWeek);
+        if(mStartYear == startYear && mStartMonth == startMonth && mMonthCount == monthCount && mFirstDayOfWeek == firstDayOfWeek) {
             LogUtil.w(LOG_TAG, "set:equal data,startYear = " + startYear + ",startMonth = " + startMonth +
-                ",monthCount = " + monthCount + ",firstDayofWeek = " + firstDayofWeek);
+                ",monthCount = " + monthCount + ",firstDayOfWeek = " + firstDayOfWeek);
             mPagerView.setCurrentItem(0);
             return;
         }
         mStartYear = startYear;
         mStartMonth = startMonth;
         mMonthCount = monthCount;
-        mFirstDayOfWeek = firstDayofWeek;
+        mFirstDayOfWeek = firstDayOfWeek;
         mMonthList.clear();
         for(int i = 0 ; i < monthCount ; i++) {
             Calendar calendar = Calendar.getInstance();
@@ -172,7 +172,6 @@ public class HPageMonthCalendarView<T> extends LinearLayout {
         mAdapter = new CalendarPagerAdapter();
         mPagerView.setAdapter(mAdapter);
         mPagerView.setCurrentItem(0);
-        mCalendarManager.iterator();
         if(mListener != null) {
             mListener.onCalendarHeightChange(mPagerView, isShowWeekDay, isShowMonthHeader, isShowMonthFooter);
         }
@@ -182,11 +181,11 @@ public class HPageMonthCalendarView<T> extends LinearLayout {
         MonthListView<T> monthListView = new MonthListView<T>(getContext());
         monthListView.setDivider(null);
         monthListView.setDividerHeight(0);
-        monthListView.setShowWeekDay(isShowWeekDay);
-        monthListView.setShowMonthHeader(isShowMonthHeader);
-        monthListView.setShowMonthFooter(isShowMonthFooter);
-        monthListView.setListener(mMonthListListener, mWeekDayListener, mWeekViewListener);
-        monthListView.set(year, month, 1, mFirstDayOfWeek);
+        monthListView.setShowWeekDay(isShowWeekDay, false);
+        monthListView.setShowMonthHeader(isShowMonthHeader, false);
+        monthListView.setShowMonthFooter(isShowMonthFooter, false);
+        monthListView.setListener(mMonthListListener, mWeekDayListener, mWeekViewListener, false);
+        monthListView.set(year, month, 1, mFirstDayOfWeek, true);
         return monthListView;
     }
 

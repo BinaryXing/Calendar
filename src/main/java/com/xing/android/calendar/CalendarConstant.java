@@ -1,10 +1,17 @@
 package com.xing.android.calendar;
 
 /**
+ * 包含了日历选择框架中涉及的一些常量定义
  * Created by zhaoxx on 16/3/9.
  */
 public class CalendarConstant {
+
     //以下是几种选择模式
+    /**
+     * 无选择模式，可以只是当作普通的日历控件，而非日历选择控件；
+     * 在该模式下，所有Cell的状态都是@link DAY_STATUS_INVALID
+     */
+    public static final int SELECT_MODE_NONE = 0;
     /**
      * 单选模式
      */
@@ -30,7 +37,7 @@ public class CalendarConstant {
      */
     public static final int SELECT_MODE_MIX_MULTI = 6;
 
-    public static final int SELECT_MODE_MIN = SELECT_MODE_SINGLE;
+    public static final int SELECT_MODE_MIN = SELECT_MODE_NONE;
     public static final int SELECT_MODE_MAX = SELECT_MODE_MIX_MULTI;
 
     //以下是Day的几种类型
@@ -64,9 +71,9 @@ public class CalendarConstant {
     public static final int DAY_TYPE_NEXT_MONTH = -4;
 
 
-    //以下是Day的几种状态
+    //以下是Day的几种状态，相对于选择的状态
     /**
-     * 无效状态，日期无效
+     * 无效状态（不可选择），在SELECT_MODE_NONE时，所有的状态都是DAY_STATUS_INVALID
      */
     public static final int DAY_STATUS_INVALID = 1;
     /**

@@ -44,10 +44,10 @@ public class MonthListActivity extends BaseCommonCalendarActivity {
             }
         });
 
-        mMonthListView.setListener(DEFAULT_MONTH_LIST_LISTENER, DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER);
-        mMonthListView.setShowWeekDay(true);
-        mMonthListView.setShowMonthHeader(true);
-        mMonthListView.setShowMonthFooter(true);
+        mMonthListView.setListener(DEFAULT_MONTH_LIST_LISTENER, DEFAULT_WEEK_DAY_LISTENER, DEFAULT_WEEK_VIEW_LISTENER, false);
+        mMonthListView.setShowWeekDay(true, false);
+        mMonthListView.setShowMonthHeader(true, false);
+        mMonthListView.setShowMonthFooter(true, true);
 
         mCalendarManager = new CalendarManager();
         mCalendarManager.addCalendarView(mMonthListView);
@@ -85,7 +85,7 @@ public class MonthListActivity extends BaseCommonCalendarActivity {
         } else {
             ToastUtil.showShortToast(this, "请输入月数（纯数字）");
         }
-        mMonthListView.set(year, month, monthCount);
-        mCalendarManager.iterator();
+        mMonthListView.set(year, month, monthCount, false);
+        mCalendarManager.iterator(true);
     }
 }

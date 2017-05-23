@@ -110,10 +110,14 @@ public class WeekDayView extends LinearLayout {
         Arrays.fill(mDayOfWeekViewList, null);
     }
 
-    public void setDayOfWeekCellListener(WeekDayListener listener) {
-        if(mWeekDayListener != listener) {
-            mWeekDayListener = listener;
-            clearViewsCache();
+    public void setDayOfWeekCellListener(WeekDayListener listener, boolean refresh) {
+        if (mWeekDayListener == listener) {
+            LogUtil.i(LOG_TAG, "setDayOfWeekCellListener:equal value");
+            return;
+        }
+        mWeekDayListener = listener;
+        clearViewsCache();
+        if (refresh) {
             init();
         }
     }
@@ -122,10 +126,14 @@ public class WeekDayView extends LinearLayout {
         return mFirstDayOfWeek;
     }
 
-    public void setFirstDayOfWeek(int firstDayOfWeek) {
+    public void setFirstDayOfWeek(int firstDayOfWeek, boolean refresh) {
         firstDayOfWeek = CalendarTool.getValidFirstDayOfWeek(firstDayOfWeek);
-        if(mFirstDayOfWeek != firstDayOfWeek) {
-            mFirstDayOfWeek = firstDayOfWeek;
+        if (mFirstDayOfWeek == firstDayOfWeek) {
+            LogUtil.i(LOG_TAG, "setFirstDayOfWeek:equal value = " + mFirstDayOfWeek);
+            return;
+        }
+        mFirstDayOfWeek = firstDayOfWeek;
+        if(refresh) {
             init();
         }
     }

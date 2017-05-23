@@ -19,11 +19,18 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
+ * 周历，从制定的某一天所在的周开始展示多少周的数据
  * Created by zhaoxx on 16/3/30.
  */
 public class WeekListView<T> extends CalendarListView<T> {
 
+    /**
+     * WeekCell
+     */
     private static final int VIEW_TYPE_NORMAL = 0;
+    /**
+     * 周日,周一,周二,周三,周四,周五,周六的WeekCell
+     */
     private static final int VIEW_TYPE_DAY_OF_WEEK = 1;
 
     private static final int VIEW_TYPE_COUNT = 2;
@@ -67,8 +74,9 @@ public class WeekListView<T> extends CalendarListView<T> {
             LogUtil.w(LOG_TAG, "init:invalid mWeekCount = " + mWeekCount);
             return;
         }
+        WeekListAdapterItem<T> item;
         if (isShowWeekDay) {
-            WeekListAdapterItem<T> item = new WeekListAdapterItem<T>();
+            item = new WeekListAdapterItem<T>();
             item.viewType = VIEW_TYPE_DAY_OF_WEEK;
             mWeekListItemList.add(item);
         }
@@ -77,7 +85,7 @@ public class WeekListView<T> extends CalendarListView<T> {
         calendar.setFirstDayOfWeek(mFirstDayOfWeek);
         calendar.set(mStartYear, mStartMonth - 1, mStartDay);
         for (int i = 0; i < mWeekCount; i++) {
-            WeekListAdapterItem<T> item = new WeekListAdapterItem<T>();
+            item = new WeekListAdapterItem<T>();
             item.viewType = VIEW_TYPE_NORMAL;
             item.week = i + 1;
             item.weekCell = new WeekCell<T>(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH), mFirstDayOfWeek);
@@ -93,62 +101,65 @@ public class WeekListView<T> extends CalendarListView<T> {
             }
             calendar.add(Calendar.DAY_OF_YEAR, 7);
         }
+        setCalendarViewProcessor();
         if (mAdapter == null) {
-            mAdapter = new WeekListAdapter<T>(getContext(), null);
+            mAdapter = new WeekListAdapter<T>(getContext(), mWeekListItemList);
             super.setAdapter(mAdapter);
         }
-        mAdapter.setData(mWeekListItemList);
-
     }
 
-    public void setShowWeekDay(boolean value) {
-        if (isShowWeekDay != value) {
+    public void setShowWeekDay(boolean value, boolean refresh) {
+        if (isShowWeekDay == value) {
+            LogUtil.i(LOG_TAG, "setShowWeekDay:equal value = " + value);
+        } else {
             isShowWeekDay = value;
             init();
-            if (mAdapter != null) {
-                mAdapter.setData(mWeekListItemList);
-            }
+        }
+        if(refresh) {
+            refresh();
         }
     }
 
     /**
-     * 这是Listener
-     *
+     * 设置Listener
      * @param weekDayListener
      * @param weekViewListener
      */
-    public void setListener(WeekDayView.WeekDayListener weekDayListener, WeekView.WeekViewListener<T> weekViewListener) {
-        if (mWeekDayListener != weekDayListener || mWeekViewListener != weekViewListener) {
+    public void setListener(WeekDayView.WeekDayListener weekDayListener, WeekView.WeekViewListener<T> weekViewListener, boolean refresh) {
+        if (mWeekDayListener == weekDayListener && mWeekViewListener == weekViewListener) {
+            LogUtil.i(LOG_TAG, "setListener:equal value");
+        } else {
             mWeekDayListener = weekDayListener;
             mWeekViewListener = weekViewListener;
-            if (mAdapter != null) {
-                mAdapter.notifyDataSetChanged();
-            }
+        }
+        if(refresh) {
+            refresh();
         }
     }
 
-    public void set(int year, int month, int day, int weekCount) {
-        set(year, month, day, weekCount, mFirstDayOfWeek);
+    public void set(int year, int month, int day, int weekCount, boolean refresh) {
+        set(year, month, day, weekCount, mFirstDayOfWeek, refresh);
     }
 
-    public void set(int year, int month, int day, int weekCount, int firstDayOfWeek) {
+    public void set(int year, int month, int day, int weekCount, int firstDayOfWeek, boolean refresh) {
         firstDayOfWeek = CalendarTool.getValidFirstDayOfWeek(firstDayOfWeek);
         if (!CalendarTool.checkValidOfDay(firstDayOfWeek, year, month, day)) {
             LogUtil.w(LOG_TAG, "set:invalid data:year = " + year + ",month = " + month + ",day = " + day);
-            return;
         } else if(year == mStartYear && month == mStartMonth && day == mStartDay && weekCount == mWeekCount && firstDayOfWeek == mFirstDayOfWeek) {
             LogUtil.w(LOG_TAG, "set:equal data:year = " + year + ",month = " + month + ",day = " + day + ",weekCount = " + weekCount + ",firstDayOfWeek = " + firstDayOfWeek);
-            return;
         } else if (weekCount < 0) {
             LogUtil.w(LOG_TAG, "set:invalid weekCount = " + weekCount);
-            return;
+        } else {
+            mStartYear = year;
+            mStartMonth = month;
+            mStartDay = day;
+            mWeekCount = weekCount;
+            mFirstDayOfWeek = firstDayOfWeek;
+            init();
         }
-        mStartYear = year;
-        mStartMonth = month;
-        mStartDay = day;
-        mWeekCount = weekCount;
-        mFirstDayOfWeek = firstDayOfWeek;
-        init();
+        if(refresh) {
+            refresh();
+        }
     }
 
     public int getWeekCount() {
@@ -170,30 +181,7 @@ public class WeekListView<T> extends CalendarListView<T> {
     @Override
     public void refresh() {
         if (mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    public void setCalendarManager(ICalendarManager<T> calendarManager) {
-        mCalendarManager = calendarManager;
-        if (mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    public void setFirstDayOfWeek(int firstDayOfWeek) {
-        super.setFirstDayOfWeek(firstDayOfWeek);
-        if(mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    public void setData(List<DayCell<T>> dataList) {
-        super.setData(dataList);
-        if(mAdapter != null) {
+            mAdapter.setData(mWeekListItemList);
             mAdapter.notifyDataSetChanged();
         }
     }
@@ -265,17 +253,17 @@ public class WeekListView<T> extends CalendarListView<T> {
                     if (convertView == null) {
                         convertView = new WeekView<T>(mContext);
                     }
-                    ((WeekView<T>) convertView).setCalendarManager((ICalendarManager<T>) mCalendarManager);
-                    ((WeekView<T>) convertView).setFirstDayOfWeek(mFirstDayOfWeek);
-                    ((WeekView<T>) convertView).setWeekViewListener((WeekViewListener<T>) mWeekViewListener);
+                    ((WeekView<T>) convertView).setCalendarManager((ICalendarManager<T>) mCalendarManager, false);
+                    ((WeekView<T>) convertView).setFirstDayOfWeek(mFirstDayOfWeek, false);
+                    ((WeekView<T>) convertView).setWeekViewListener((WeekViewListener<T>) mWeekViewListener, false);
                     ((WeekView<T>) convertView).setWeekCell(item.weekCell, true);
                     break;
                 case VIEW_TYPE_DAY_OF_WEEK:
                     if (convertView == null) {
                         convertView = new WeekDayView(mContext);
                     }
-                    ((WeekDayView) convertView).setFirstDayOfWeek(mFirstDayOfWeek);
-                    ((WeekDayView) convertView).setDayOfWeekCellListener(mWeekDayListener);
+                    ((WeekDayView) convertView).setFirstDayOfWeek(mFirstDayOfWeek, false);
+                    ((WeekDayView) convertView).setDayOfWeekCellListener(mWeekDayListener, true);
                     break;
                 default:
                     break;

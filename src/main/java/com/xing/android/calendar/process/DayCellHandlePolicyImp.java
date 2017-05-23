@@ -35,8 +35,8 @@ public class DayCellHandlePolicyImp<T>{
             }
             DayCell<T> beforeCell = beforeSelectCell != null ? beforeSelectCell.getCopyDayCell() : null;
             DayCell<T> afterCell = null;
-            if(!CalendarTool.isEqual(beforeCell, factorCell)) {
-                afterCell = factorCell;
+            if(beforeCell == null || !CalendarTool.isEqual(beforeCell, factorCell)) {
+                afterCell = factorCell.getCopyDayCell();
             }
             calendarManager.setSelectedDaycell(afterCell, false);
             calendarManager.refreshAffectViewList(afterCell, beforeCell);

@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
+ * 根据某年某周生成该周的数据，需要配合{@link #mFirstDayOfWeek}
  * Created by zhaoxx on 16/3/14.
  */
 public class YearWeekCell<T> implements IWeekCell<T> {
@@ -22,10 +23,21 @@ public class YearWeekCell<T> implements IWeekCell<T> {
 
     protected List<DayCell<T>> mDayCellList = new ArrayList<DayCell<T>>();
 
+    /**
+     * 创建对象时，确保年周的有效性（需要配合{@link #mFirstDayOfWeek}）
+     * @param year
+     * @param week
+     */
     public YearWeekCell(int year, int week) {
         set(year, week);
     }
 
+    /**
+     * 创建对象时，确保年周的有效性（需要配合{@link #mFirstDayOfWeek}）
+     * @param year
+     * @param week
+     * @param firstDayOfWeek
+     */
     public YearWeekCell(int year, int week, int firstDayOfWeek) {
         set(year, week, firstDayOfWeek);
     }
@@ -57,16 +69,27 @@ public class YearWeekCell<T> implements IWeekCell<T> {
         }
     }
 
+    /**
+     * 调用者，确保年周的有效性（需要配合{@link #mFirstDayOfWeek}）
+     * @param year
+     * @param week
+     */
     public void set(int year, int week) {
         set(year, week, mFirstDayOfWeek);
     }
 
+    /**
+     * 调用者，确保年周的有效性（需要配合firstDayOfWeek）
+     * @param year
+     * @param week
+     * @param firstDayOfWeek
+     */
     public void set(int year, int week, int firstDayOfWeek) {
+        firstDayOfWeek = CalendarTool.getValidFirstDayOfWeek(firstDayOfWeek);
         if (mYear == year && mWeek == week && mFirstDayOfWeek == firstDayOfWeek) {
             LogUtil.i(LOG_TAG, "set:equal data");
             return;
         }
-        firstDayOfWeek = CalendarTool.getValidFirstDayOfWeek(firstDayOfWeek);
         if (CalendarTool.checkValidOfWeek(firstDayOfWeek, year, week)) {
             mFirstDayOfWeek = firstDayOfWeek;
             mYear = year;

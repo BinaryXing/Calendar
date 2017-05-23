@@ -55,15 +55,15 @@ public class VPageWeekCalendarView<T> extends WeekListView<T> {
     }
 
     private void onCreate() {
-        super.setShowWeekDay(false);
+        super.setShowWeekDay(false, false);
         //屏蔽Fling
         super.setVelocityScale(0.01f);
         setDivider(null);
         setDividerHeight(0);
     }
 
-    public void setData(int startYear, int startMonth, int monthCount) {
-        setData(startYear, startMonth, monthCount, mFirstDayOfWeek);
+    public void setData(int startYear, int startMonth, int monthCount, boolean refresh) {
+        setData(startYear, startMonth, monthCount, mFirstDayOfWeek, refresh);
     }
 
     /**
@@ -93,7 +93,7 @@ public class VPageWeekCalendarView<T> extends WeekListView<T> {
 
     }
 
-    public void setData(int startYear, int startMonth, int monthCount, int firstDayOfWeek) {
+    public void setData(int startYear, int startMonth, int monthCount, int firstDayOfWeek, boolean refresh) {
         firstDayOfWeek = CalendarTool.getValidFirstDayOfWeek(firstDayOfWeek);
         if(mStartYear == startYear && mStartMonth == startMonth && mMonthCount == monthCount && mFirstDayOfWeek == firstDayOfWeek) {
             LogUtil.w(LOG_TAG, "setData:equal data,startYear = " + startYear + ",startMonth = " + startMonth + ",monthCount = " + monthCount + ",firstDayOfWeek = " + firstDayOfWeek);
@@ -104,6 +104,13 @@ public class VPageWeekCalendarView<T> extends WeekListView<T> {
         mMonthCount = monthCount;
         mFirstDayOfWeek = firstDayOfWeek;
         initData();
+        if(refresh) {
+            refresh();
+            smoothScrollToPositionFromTop(0, 0, 0);
+            if(mListener != null) {
+                mListener.onScrollToPosition(0, mWeekEntitiyList.get(0));
+            }
+        }
     }
 
     public void setRowHeight(float height) {
@@ -274,22 +281,24 @@ public class VPageWeekCalendarView<T> extends WeekListView<T> {
             }
             startCalendar.add(Calendar.DAY_OF_MONTH, 1);
         }
-        super.set(mStartYear, mStartMonth, 1, weekPosition + 1);
-        smoothScrollToPositionFromTop(0, 0, 0);
-        if(mListener != null) {
-            mListener.onScrollToPosition(0, mWeekEntitiyList.get(0));
-        }
+        super.set(mStartYear, mStartMonth, 1, weekPosition + 1, false);
     }
 
     @Deprecated
     @Override
-    public void set(int year, int month, int day, int weekCount) {
+    public void set(int year, int month, int day, int weekCount, boolean refresh) {
         //该方法无效，该类是以月份分页的
     }
 
     @Deprecated
     @Override
-    public void setShowWeekDay(boolean value) {
+    public void set(int year, int month, int day, int weekCount, int firstDayOfWeek, boolean refresh) {
+        //该方法无效，该类是以月份分页的
+    }
+
+    @Deprecated
+    @Override
+    public void setShowWeekDay(boolean value, boolean refresh) {
         //该方法无效，不允许外部设置
     }
 

@@ -6,7 +6,7 @@ import com.xing.android.calendar.util.LogUtil;
 import java.util.Calendar;
 
 /**
- * 具体某一天
+ * 某天
  * Created by zhaoxx on 16/3/9.
  */
 public class DayCell<T> {
@@ -16,27 +16,32 @@ public class DayCell<T> {
     protected int mYear;
     protected int mMonth;
     protected int mDay;
-    protected int mWeekDay;
     protected T mData;
+    //该天的类型，具体请看CalendarConstant.DAY_TYPE_XXX
     protected int mDayType;
+    //该天的选择状态
     protected int mDayStatus = CalendarConstant.DAY_STATUS_UNSELECTED;
 
+    /**
+     * 创建对象时,要确保年月日的数据有效性
+     * @param year
+     * @param month
+     * @param day
+     */
     public DayCell(int year, int month, int day) {
-        mYear = year;
-        mMonth = month;
-        mDay = day;
-        setWeekDay();
+        set(year, month, day);
     }
 
+    /**
+     * 调用者需要确保年月日的数据有效性
+     * @param year
+     * @param month
+     * @param day
+     */
     public void set(int year, int month, int day) {
-        if(mYear == year && mMonth == month && mDay == day) {
-            LogUtil.i(LOG_TAG, "set:equal data");
-            return;
-        }
         mYear = year;
         mMonth = month;
         mDay = day;
-        setWeekDay();
     }
 
     public int getYear() {
@@ -49,10 +54,6 @@ public class DayCell<T> {
 
     public int getDay() {
         return mDay;
-    }
-
-    public int getWeekDay() {
-        return mWeekDay;
     }
 
     public T getData() {
@@ -87,15 +88,9 @@ public class DayCell<T> {
         return result;
     }
 
-    private void setWeekDay() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.clear();
-        calendar.set(mYear, mMonth - 1, mDay);
-        mWeekDay = calendar.get(Calendar.DAY_OF_WEEK);
-    }
-
     @Override
     public String toString() {
         return "" + mYear + "年" + mMonth + "月" + mDay + "日";
     }
+
 }

@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
+ * 根据指定的某一天，生成该天所在的一周数据，需要配合{@link #mFirstDayOfWeek}
  * Created by zhaoxx on 16/3/11.
  */
 public class WeekCell<T> implements IWeekCell<T> {
@@ -22,10 +23,23 @@ public class WeekCell<T> implements IWeekCell<T> {
 
     protected List<DayCell<T>> mDayCellList = new ArrayList<DayCell<T>>();
 
+    /**
+     * 创建对象时，需要确保年月日的有效性(需要配合{@link #mFirstDayOfWeek})
+     * @param year
+     * @param month
+     * @param day
+     */
     public WeekCell(int year, int month, int day) {
         set(year, month, day);
     }
 
+    /**
+     * 创建对象时，需要确保年月日的有效性(需要配合firstDayOfWeek)
+     * @param year
+     * @param month
+     * @param day
+     * @param firstDayOfWeek
+     */
     public WeekCell(int year, int month, int day, int firstDayOfWeek) {
         set(year, month, day, firstDayOfWeek);
     }
@@ -47,16 +61,29 @@ public class WeekCell<T> implements IWeekCell<T> {
         } while (calendar.get(Calendar.DAY_OF_WEEK) != mFirstDayOfWeek);
     }
 
+    /**
+     * 调用时，需要确保年月日的有效性(需要配合{@link #mFirstDayOfWeek})
+     * @param year
+     * @param month
+     * @param day
+     */
     public void set(int year, int month, int day) {
         set(year, month, day, mFirstDayOfWeek);
     }
 
+    /**
+     * 调用时，需要确保年月日的有效性(需要配合{@link #mFirstDayOfWeek})
+     * @param year
+     * @param month
+     * @param day
+     * @param firstDayOfWeek
+     */
     public void set(int year, int month, int day, int firstDayOfWeek) {
+        firstDayOfWeek = CalendarTool.getValidFirstDayOfWeek(firstDayOfWeek);
         if(mYear == year && mMonth == month && day == mDay && mFirstDayOfWeek == firstDayOfWeek) {
             LogUtil.i(LOG_TAG, "set:equal data");
             return;
         }
-        firstDayOfWeek = CalendarTool.getValidFirstDayOfWeek(firstDayOfWeek);
         if(CalendarTool.checkValidOfDay(firstDayOfWeek, year, month, day)) {
             mFirstDayOfWeek = firstDayOfWeek;
             mYear = year;

@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CalendarView 数据处理
+ * CalendarView 数据处理，日历控件都是连续日期的数据处理可以用该类，内部持有{@link #mStartDayCell}和{@link #mEndDayCell}；
+ * 比如{@link #isAffect(DayCell, DayCell)}是通过{@link #mStartDayCell}和{@link #mEndDayCell}计算的；
  * Created by zxx09506 on 2016/11/3.
  */
 
@@ -52,10 +53,10 @@ public class CalendarViewProcessorImp<T> implements ICalendarViewProcessor<T> {
 
     @Override
     public boolean isAffect(DayCell<T> dayCell, DayCell<T> originDayCell) {
-        //判断originDayCell是因为SELECT_MODE_SINGLE时
         if(isAffectSingleItem(dayCell)) {
             return true;
         } else if(isAffectSingleItem(originDayCell)) {
+            //判断originDayCell是因为SELECT_MODE_SINGLE时，dayCell和originDayCell互斥，可能只有一个对当前View有影响
             return true;
         }
         return false;
@@ -205,7 +206,7 @@ public class CalendarViewProcessorImp<T> implements ICalendarViewProcessor<T> {
     }
 
     @Override
-    public void setData(List<DayCell<T>> dataList) {
+    public void setData(List<DayCell<T>> dataList, boolean keepOld, boolean refresh) {
         if(mDayCellList == null || mDayCellList.size() == 0) {
             LogUtil.w(LOG_TAG, "setData:mDayCellList is empty");
             return;
@@ -224,7 +225,7 @@ public class CalendarViewProcessorImp<T> implements ICalendarViewProcessor<T> {
             }
             if(CalendarTool.isEqual(cell, currentCell)) {
                 cell.setData(currentCell.getData());
-            } else {
+            } else if(!keepOld) {
                 cell.setData(null);
             }
             if(mCalendarManager != null) {

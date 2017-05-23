@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
+ * CalendarView，内部日期是连续的
  * Created by zhaoxx on 16/3/31.
  */
 public abstract class CalendarView<T> extends LinearLayout implements ICalendarView<T> {
@@ -25,8 +26,8 @@ public abstract class CalendarView<T> extends LinearLayout implements ICalendarV
     protected final String LOG_TAG = getClass().getSimpleName();
 
     protected int mFirstDayOfWeek = Calendar.SUNDAY;
-    protected ICalendarManager<T> mCalendarManager;
 
+    //由于内部日期是连续的，所以可以通过记录开始DayCell和结束DayCell来配合mCalendarVieProcessor；
     protected DayCell<T> mStartDayCell;
     protected DayCell<T> mEndDayCell;
 
@@ -34,129 +35,172 @@ public abstract class CalendarView<T> extends LinearLayout implements ICalendarV
 
     protected ICalendarViewProcessor<T> mCalendarVieProcessor;
 
+    protected ICalendarManager<T> mCalendarManager;
+
     public CalendarView(Context context) {
         super(context);
+        initCalendarViewProcessor();
     }
 
     public CalendarView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initCalendarViewProcessor();
     }
 
+    /**
+     * 初始化，主要针对内部数据初始化
+     */
     protected abstract void init();
 
+    /**
+     * 刷新View
+     */
     @Override
     public abstract void refresh();
 
     @Override
-    public abstract void setCalendarManager(ICalendarManager<T> calendarManager);
+    public void setCalendarManager(ICalendarManager<T> calendarManager, boolean refresh) {
+        if(calendarManager == null) {
+            LogUtil.d(LOG_TAG, "setCalendarManager:calendarManager is null");
+            return;
+        }
+        mCalendarManager = calendarManager;
+        setCalendarViewProcessor();
+        if(refresh) {
+            refresh();
+        }
+    }
+
+    @Override
+    public ICalendarManager<T> getCalendarManager() {
+        return mCalendarManager;
+    }
 
     @Override
     public boolean isAffect(DayCell<T> dayCell, DayCell<T> originDayCell) {
-        initCalendarViewHandler();
-        if(mCalendarVieProcessor != null) {
-            return mCalendarVieProcessor.isAffect(dayCell, originDayCell);
+        initCalendarViewProcessor();
+        setCalendarViewProcessor();
+        if(mCalendarVieProcessor == null) {
+            LogUtil.w(LOG_TAG, "isAffectDayCell:mCalendarVieProcessor is null");
+            return false;
         }
-        return false;
+        return mCalendarVieProcessor.isAffect(dayCell, originDayCell);
     }
 
     @Override
     public boolean isAffect(ContinuousSelectItem<T> item, ContinuousSelectItem<T> originItem) {
-        initCalendarViewHandler();
-        if(mCalendarVieProcessor != null) {
-            return mCalendarVieProcessor.isAffect(item, originItem);
+        initCalendarViewProcessor();
+        setCalendarViewProcessor();
+        if(mCalendarVieProcessor == null) {
+            LogUtil.w(LOG_TAG, "isAffectContinuousSelectItem:mCalendarVieProcessor is null");
+            return false;
         }
-        return false;
+        return mCalendarVieProcessor.isAffect(item, originItem);
     }
 
     @Override
     public void onDayCellChanged(DayCell<T> dayCell, boolean refresh) {
-        if(mCalendarManager == null) {
+        initCalendarViewProcessor();
+        setCalendarViewProcessor();
+        if (mCalendarManager == null) {
             LogUtil.w(LOG_TAG, "onDayCellChanged:mCalendarManager is null");
             return;
-        } else if(mCalendarManager.getSelectMode() != CalendarConstant.SELECT_MODE_SINGLE) {
+        } else if (mCalendarVieProcessor == null) {
+            LogUtil.w(LOG_TAG, "onDayCellChanged:mCalendarVieProcessor is null");
+            return;
+        } else if (mCalendarManager.getSelectMode() != CalendarConstant.SELECT_MODE_SINGLE) {
             LogUtil.w(LOG_TAG, "onDayCellChanged:select mode not match, getSelectMode() = " + mCalendarManager.getSelectMode());
             return;
         }
-        initCalendarViewHandler();
-        if(mCalendarVieProcessor != null) {
-            mCalendarVieProcessor.onDayCellChanged(dayCell, refresh);
-            if(refresh) {
-                refresh();
-            }
+        mCalendarVieProcessor.onDayCellChanged(dayCell, refresh);
+        if (refresh) {
+            refresh();
         }
     }
 
     @Override
     public void onDayCellListChanged(List<DayCell<T>> dayCellList, boolean refresh) {
-        if(mCalendarManager == null) {
+        initCalendarViewProcessor();
+        setCalendarViewProcessor();
+        if (mCalendarManager == null) {
             LogUtil.w(LOG_TAG, "onDayCellListChanged:mCalendarManager is null");
             return;
-        } else if(mCalendarManager.getSelectMode() != CalendarConstant.SELECT_MODE_MULTI) {
+        } else if (mCalendarVieProcessor == null) {
+            LogUtil.w(LOG_TAG, "onDayCellListChanged:mCalendarVieProcessor is null");
+            return;
+        } else if (mCalendarManager.getSelectMode() != CalendarConstant.SELECT_MODE_MULTI) {
             LogUtil.w(LOG_TAG, "onDayCellListChanged:select mode not match, getSelectMode() = " + mCalendarManager.getSelectMode());
             return;
         }
-        initCalendarViewHandler();
-        if(mCalendarVieProcessor != null) {
-            mCalendarVieProcessor.onDayCellListChanged(dayCellList, refresh);
-            if(refresh) {
-                refresh();
-            }
+        mCalendarVieProcessor.onDayCellListChanged(dayCellList, refresh);
+        if (refresh) {
+            refresh();
         }
     }
 
     @Override
     public void onContinuousItemChanged(ContinuousSelectItem<T> item, boolean refresh) {
-        if(mCalendarManager == null) {
+        initCalendarViewProcessor();
+        setCalendarViewProcessor();
+        if (mCalendarManager == null) {
             LogUtil.w(LOG_TAG, "onContinuousItemChanged:mCalendarManager is null");
             return;
-        } else if(mCalendarManager.getSelectMode() != CalendarConstant.SELECT_MODE_MIX &&
+        } else if (mCalendarVieProcessor == null) {
+            LogUtil.w(LOG_TAG, "onContinuousItemChanged:mCalendarVieProcessor is null");
+            return;
+        } else if (mCalendarManager.getSelectMode() != CalendarConstant.SELECT_MODE_MIX &&
                 mCalendarManager.getSelectMode() != CalendarConstant.SELECT_MODE_CONTINUOUS) {
             LogUtil.w(LOG_TAG, "onContinuousItemChanged:select mode not match, getSelectMode() = " + mCalendarManager.getSelectMode());
             return;
         }
-        initCalendarViewHandler();
-        if(mCalendarVieProcessor != null) {
-            mCalendarVieProcessor.onContinuousItemChanged(item, refresh);
-            if(refresh) {
-                refresh();
-            }
+        mCalendarVieProcessor.onContinuousItemChanged(item, refresh);
+        if (refresh) {
+            refresh();
         }
     }
 
     @Override
     public void onContinuousItemListChanges(List<ContinuousSelectItem<T>> continuousSelectItems, boolean refresh) {
-        if(mCalendarManager == null) {
+        initCalendarViewProcessor();
+        setCalendarViewProcessor();
+        if (mCalendarManager == null) {
             LogUtil.w(LOG_TAG, "onContinuousItemListChanges:mCalendarManager is null");
             return;
-        } else if(mCalendarManager.getSelectMode() != CalendarConstant.SELECT_MODE_MIX_MULTI &&
+        } else if (mCalendarVieProcessor == null) {
+            LogUtil.w(LOG_TAG, "onContinuousItemListChanges:mCalendarVieProcessor is null");
+            return;
+        } else if (mCalendarManager.getSelectMode() != CalendarConstant.SELECT_MODE_MIX_MULTI &&
                 mCalendarManager.getSelectMode() != CalendarConstant.SELECT_MODE_CONTINUOUS_MULTI) {
             LogUtil.w(LOG_TAG, "onContinuousItemListChanges:select mode not match, getSelectMode() = " + mCalendarManager.getSelectMode());
             return;
         }
-        initCalendarViewHandler();
-        if(mCalendarVieProcessor != null) {
-            mCalendarVieProcessor.onContinuousItemListChanges(continuousSelectItems, refresh);
-            if(refresh) {
-                refresh();
-            }
+        mCalendarVieProcessor.onContinuousItemListChanges(continuousSelectItems, refresh);
+        if (refresh) {
+            refresh();
         }
     }
 
     @Override
-    public void setData(List<DayCell<T>> dataList) {
-        initCalendarViewHandler();
-        if(mCalendarVieProcessor != null) {
-            mCalendarVieProcessor.setData(dataList);
+    public void setData(List<DayCell<T>> dataList, boolean keepOld, boolean refresh) {
+        initCalendarViewProcessor();
+        setCalendarViewProcessor();
+        if(mCalendarVieProcessor == null) {
+            LogUtil.w(LOG_TAG, "setData:mCalendarVieProcessor is null");
+            return;
+        }
+        mCalendarVieProcessor.setData(dataList, keepOld, refresh);
+        if(refresh) {
+            refresh();
         }
     }
 
     @Override
     public void iterator() {
         if(mDayCellList == null || mDayCellList.size() == 0) {
-            LogUtil.i(LOG_TAG, "foreach:mDayCellList is empty");
+            LogUtil.i(LOG_TAG, "iterator:mDayCellList is empty");
             return;
         } else if(mCalendarManager == null) {
-            LogUtil.i(LOG_TAG, "foreach:mCalendarManager is empty");
+            LogUtil.i(LOG_TAG, "iterator:mCalendarManager is empty");
             return;
         }
         for(DayCell<T> dayCell : mDayCellList) {
@@ -168,19 +212,41 @@ public abstract class CalendarView<T> extends LinearLayout implements ICalendarV
     }
 
     @Override
-    public void setFirstDayOfWeek(int firstDayOfWeek) {
+    public void setFirstDayOfWeek(int firstDayOfWeek, boolean refresh) {
         firstDayOfWeek = CalendarTool.getValidFirstDayOfWeek(firstDayOfWeek);
-        if(mFirstDayOfWeek != firstDayOfWeek) {
-            mFirstDayOfWeek = firstDayOfWeek;
-            init();
+        if (mFirstDayOfWeek == firstDayOfWeek) {
+            LogUtil.i(LOG_TAG, "setFirstDayOfWeek:equal value, mFirstDayOfWeek = " + mFirstDayOfWeek + ", firstDayOfWeek = " + firstDayOfWeek);
+            return;
+        }
+        mFirstDayOfWeek = firstDayOfWeek;
+        init();
+        setCalendarViewProcessor();
+        if(refresh) {
             refresh();
         }
     }
 
-    protected void initCalendarViewHandler() {
+    @Override
+    public int getFirstDayOfWeek() {
+        return mFirstDayOfWeek;
+    }
+
+    /**
+     * 初始化CalendarViewProcessor
+     */
+    protected void initCalendarViewProcessor() {
         if(mCalendarVieProcessor == null) {
             mCalendarVieProcessor = new CalendarViewProcessorImp<T>(mStartDayCell, mEndDayCell, mDayCellList, mCalendarManager);
+            setCalendarViewProcessor();
         }
-        ((CalendarViewProcessorImp)mCalendarVieProcessor).set(mStartDayCell, mEndDayCell, mDayCellList, mCalendarManager);
+    }
+
+    /**
+     * 更新CalendarViewProcessor的数据，相关数据有变化时，需要调用该方法
+     */
+    protected void setCalendarViewProcessor() {
+        if(mCalendarVieProcessor != null && mCalendarVieProcessor instanceof CalendarViewProcessorImp) {
+            ((CalendarViewProcessorImp<T>) mCalendarVieProcessor).set(mStartDayCell, mEndDayCell, mDayCellList, mCalendarManager);
+        }
     }
 }
